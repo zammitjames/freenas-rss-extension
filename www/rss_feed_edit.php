@@ -127,7 +127,7 @@ if ($_POST) {
 				<table width="100%" border="0" cellpadding="6" cellspacing="0">
 					<?php html_inputbox("name", gettext("Name"), $pconfig['name'], gettext("You may enter a name here for your reference."), true, 40);?>
                     <?php html_inputbox("_url", gettext("URL"), $pconfig['_url'], gettext("Enter the URL of the feed."), true, 40); ?>
-                    <?php html_inputbox("directory", gettext("Save in"), $pconfig['directory'], gettext("Download feed items to this folder.  This is overriden by filters"), false, 40); ?>
+					<?php html_filechooser("directory", gettext("Download directory"), $pconfig['directory'], gettext("Where to save downloaded data."), $g['media_path'], true, 60); ?>
                     <tr>
 						<td width="22%" valign="top" class="vncell"><?=gettext("Subscribe");?></td>
                         <td width="78%" class="vtable">

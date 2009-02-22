@@ -52,16 +52,16 @@ if (isset($id) && $a_filter[$id]) {
 	$pconfig['uuid'] = $a_filter[$id]['uuid'];
 	$pconfig['name'] = $a_filter[$id]['name'];
 	$pconfig['filter'] = $a_filter[$id]['filter'];
-    $pconfig['directory'] = $a_filter[$id]['directory'];
+	$pconfig['directory'] = $a_filter[$id]['directory'];
 	$pconfig['enabled'] = $a_filter[$id]['enabled'];
-    $pconfig['feed'] = $a_filter[$id]['feed'];
+	$pconfig['feed'] = $a_filter[$id]['feed'];
 } else {
 	$pconfig['uuid'] = uuid();
 	$pconfig['name'] = '';
 	$pconfig['filter'] = '';
-    $pconfig['directory'] = '';
+	$pconfig['directory'] = '';
 	$pconfig['enabled'] = false;
-    $pconfig['feed'] = -1;
+	$pconfig['feed'] = -1;
 }
 
 if ($_POST) {
@@ -78,21 +78,21 @@ if ($_POST) {
 			break;
 		}
 	}
-    
-    $reqdfields = explode(" ", "name filter");
-    $reqdfieldsn = array(gettext("Name"), gettext("Filter"));
-    do_input_validation($_POST, $reqdfields, $reqdfieldsn, &$input_errors);
-    
-    if (!empty($_POST['directory']) && !is_dir($_POST['directory'])) $input_errors[] = gettext("Download directory does not exist.");
+	
+	$reqdfields = explode(" ", "name filter");
+	$reqdfieldsn = array(gettext("Name"), gettext("Filter"));
+	do_input_validation($_POST, $reqdfields, $reqdfieldsn, &$input_errors);
+	
+	if (!empty($_POST['directory']) && !is_dir($_POST['directory'])) $input_errors[] = gettext("Download directory does not exist.");
 
 	if (!$input_errors) {
-        $filter = array();
-        $filter['uuid'] = $_POST['uuid'];
-        $filter['name'] = $_POST['name'];
-        $filter['filter'] = $_POST['filter'];
-        $filter['directory'] = $_POST['directory'];
-        $filter['enabled'] = $_POST['enabled'] ? true : false;
-        $filter['feed'] = $_POST['feed'];
+		$filter = array();
+		$filter['uuid'] = $_POST['uuid'];
+		$filter['name'] = $_POST['name'];
+		$filter['filter'] = $_POST['filter'];
+		$filter['directory'] = $_POST['directory'];
+		$filter['enabled'] = $_POST['enabled'] ? true : false;
+		$filter['feed'] = $_POST['feed'];
 
 		if (isset($id) && $a_filter[$id]) {
 			$a_filter[$id] = $filter;
@@ -111,12 +111,12 @@ if ($_POST) {
 ?>
 <?php include("fbegin.inc");?>
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
-  <tr>
+	<tr>
 		<td class="tabnavtbl">
 			<ul id="tabnav">
 				<li class="tabinact"><a href="rss_feed_manage.php"><span><?=gettext("Feeds");?></span></a></li>
 				<li class="tabact"><a href="rss_filter_manage.php" title="<?=gettext("Reload page");?>"><span><?=gettext("Filters");?></span></a></li>
-                <li class="tabinact"><a href="rss_history.php"><span><?=gettext("History");?></span></a></li>
+				<li class="tabinact"><a href="rss_history.php"><span><?=gettext("History");?></span></a></li>
 			</ul>
 		</td>
 	</tr>
@@ -126,22 +126,22 @@ if ($_POST) {
 				<?php if ($input_errors) print_input_errors($input_errors); ?>
 				<table width="100%" border="0" cellpadding="6" cellspacing="0">
 					<?php html_inputbox("name", gettext("Name"), $pconfig['name'], gettext("You may enter a name here for your reference."), true, 40);?>
-                    <?php html_inputbox("filter", gettext("Filter"), $pconfig['filter'], gettext("Enter a Perl regular expression."), true); ?>
-                    <?php html_inputbox("directory", gettext("Save in"), $pconfig['directory'], gettext("Download matches to this folder."), false, 40); ?>
+					<?php html_inputbox("filter", gettext("Filter"), $pconfig['filter'], gettext("Enter a Perl regular expression."), true); ?>
+					<?php html_filechooser("directory", gettext("Download directory"), $pconfig['directory'], gettext("Where to save downloaded data."), $g['media_path'], true, 60); ?>
 					<tr>
 						<td width="22%" valign="top" class="vncell"><?=gettext("Enabled");?></td>
-                        <td width="78%" class="vtable">
+						<td width="78%" class="vtable">
 							<input name="enabled" type="checkbox" id="enabled" value="yes" <?php if (isset($pconfig['enabled'])) echo "checked";?>>
 							<span class="vexpl"><?=gettext("Enable this filter.");?></span>
-                        </td>
-                    </tr>
+						</td>
+					</tr>
 					<tr>
 						<td width="22%" valign="top" class="vncell"><?=gettext("Feed");?></td>
 						<td width="78%" class="vtable">
 							<select name="feed" class="formfld" id="feed">
-                                <option value="-1" <?if (-1 == $pconfig['feed']) echo 'selected';?>></option>
+								<option value="-1" <?if (-1 == $pconfig['feed']) echo 'selected';?>></option>
 								<?php foreach ($a_feed as $feedk => $feedv): ?>
-								<option value="<?=$feedk;?>" <?php if ($feedk == $pconfig['feed']) echo "selected";?>><?php echo htmlspecialchars($feedv['name']);?></option>
+								<option value="<?=$feedv['uuid'];?>" <?php if ($feedv['uuid'] == $pconfig['feed']) echo "selected";?>><?php echo htmlspecialchars($feedv['name']);?></option>
 								<?php endforeach; ?>
 							</select>
 					  </td>

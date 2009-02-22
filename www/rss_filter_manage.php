@@ -6,6 +6,8 @@ $pgtitle = array(gettext('Extensions'), gettext('RSS'), gettext('Filters'));
 if (!is_array($config['rss'])) $config['rss'] = array();
 if (!is_array($config['rss']['filters'])) $config['rss']['filters'] = array('rule'=>array());
 
+array_sort_key($config['rss']['filters']['rule'], "name");
+
 $a_filters = &$config['rss']['filters']['rule'];
 $a_feeds = &$config['rss']['feeds']['rule'];
 
@@ -14,6 +16,15 @@ if ($_GET['act'] === "del") {
         unset($config['rss']['filters']['rule'][$_GET['id']]);
         write_config();
 	}
+}
+
+function feed_by_uuid($uuid) {
+  global $a_feeds;
+  foreach ($a_feeds as $feed) {
+    if ($feed['uuid'] == $uuid) return $feed['name'];
+  }
+
+  return 'Invalid Feed';
 }
 
 include("fbegin.inc");
@@ -47,7 +58,7 @@ include("fbegin.inc");
 						<td class="<?=$enable?"listlr":"listlrd";?>"><?=htmlspecialchars($filter['name']);?></td>
 						<td class="<?=$enable?"listrc":"listrcd";?>"><?=htmlspecialchars($filter['filter']);?></td>
                         <td class="<?=$enable?"listrc":"listrcd";?>"><?php
-                            if($filter['feed'] != -1) echo htmlspecialchars($a_feeds[$filter['feed']]['name']);
+                            if($filter['feed'] != -1) echo htmlspecialchars(feed_by_uuid($filter['feed']));
                         ?>&nbsp;</td>
 						<td class="<?=$enable?"listrc":"listrcd";?>">
                             <?php if ($enable):?>

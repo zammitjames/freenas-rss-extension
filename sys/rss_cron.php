@@ -14,7 +14,8 @@ function addTorrent($torrent, $folder = '') {
     if (!empty($folder) && is_dir($folder))
         $cmd .= " --download-dir=$folder";
     
-    $cmd .= " -a /tmp/{$file}.torrent 2>&1";
+    // just to be safe, set everything back to the default download directory
+    $cmd .= " -a /tmp/{$file}.torrent --download-dir={$config['bittorrent']['downloaddir']} 2>&1";
     
     mwexec2($cmd, $output, $retVal);
 }
@@ -52,7 +53,7 @@ foreach ($a_feeds as &$feed) {
         } else {
             foreach ($a_filters as $filter) {
                 if (!isset($filter['enabled'])) continue;
-                if ($filter['feed'] != -1 && $filter['feed'] != $feed['id']) continue;
+                if ($filter['feed'] != -1 && $filter['feed'] != $feed['uuid']) continue;
                 
                 if (preg_match('/'.$filter['filter'].'/i', $item['title']))
                 {
