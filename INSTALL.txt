@@ -1,0 +1,2 @@
+menu.inc goes in /usr/local/www/ext/rss
+rss_*.php go in /usr/local/www
