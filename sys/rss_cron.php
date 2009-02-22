@@ -12,10 +12,10 @@ function addTorrent($torrent, $folder = '') {
     $cmd = "transmission-remote --auth=admin:{$config['bittorrent']['password']}";
     
     if (!empty($folder) && is_dir($folder))
-        $cmd .= " --download-dir=$folder";
+        $cmd .= " --download-dir=\"$folder\"";
     
     // just to be safe, set everything back to the default download directory
-    $cmd .= " -a /tmp/{$file}.torrent --download-dir={$config['bittorrent']['downloaddir']} 2>&1";
+    $cmd .= " -a /tmp/{$file}.torrent --download-dir=\"{$config['bittorrent']['downloaddir']}\" 2>&1";
     
     mwexec2($cmd, $output, $retVal);
 }

@@ -2,6 +2,10 @@
 <?php
 require('guiconfig.inc');
 
+function pubdate_sort($a, $b) {
+  return strtotime($a['pubdate']) < strtotime($b['pubdate']);
+}
+
 $pgtitle = array(gettext('Extensions'), gettext('RSS'), gettext('History'));
 if (!is_array($config['rss'])) $config['rss'] = array();
 if (!is_array($config['rss']['feeds'])) $config['rss']['feeds'] = array('rule'=>array());
@@ -25,7 +29,8 @@ foreach ($a_feeds as $feed)
     if (!isset($feed['history'])) continue;
     $history = array_merge($history, $feed['history']['rule']);
 }
-    
+
+usort($history, "pubdate_sort");
 include("fbegin.inc");
 ?>
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
