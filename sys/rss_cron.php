@@ -4,12 +4,18 @@ require_once("util.inc");
 require_once("config.inc");
 require_once("XML/Unserializer.php");
 
-function addTorrent($torrent, $folder = '') {
+function get_download($item) {
+    if (isset($item['enclosure']) && isset($item['enclosure']['attributes'])  && $item['enclosure']['attributes']['type'] == 'application/x-bittorrent')
+        return $item['enclosure']['attributes']['url'];
+    return $item['link'];
+}
+
+function add_torrent($torrent, $folder = '') {
     global $config;
     
     if (isset($config['rss']['debug'])) write_log("RSS: Downloading " . basename($torrent) . " to $folder");
     $file = md5($torrent);
-    exec("fetch -o /tmp/{$file}.torrent \"$torrent\"", $output, $retVal);
+    exec("fetch -o/tmp/{$file}.torrent \"$torrent\"", $output, $retVal);
     
     $cmd = "transmission-remote --auth=admin:{$config['bittorrent']['password']}";
     
@@ -20,6 +26,7 @@ function addTorrent($torrent, $folder = '') {
     $cmd .= " -a /tmp/{$file}.torrent --download-dir=\"{$config['bittorrent']['downloaddir']}\" 2>&1";
     
     mwexec2($cmd, $output, $retVal);
+    unlink("/tmp/{$file}.torrent");
 }
 
 // We don't have any feeds, just exit.  Filters are not required.
@@ -34,7 +41,11 @@ if (isset($config['rss']) && isset($config['rss']['filters']))
 else
     $a_filters = array();
 
-$Unserializer = &new XML_Unserializer();
+$options = array(
+    'parseAttributes' => TRUE,
+    'attributesArray' => 'attributes'
+);
+$Unserializer = &new XML_Unserializer($options);
 
 foreach ($a_feeds as &$feed) {
     if(!isset($feed['enabled'])) continue;
@@ -46,17 +57,16 @@ foreach ($a_feeds as &$feed) {
     
     $data = $Unserializer->getUnserializedData();
     if (!is_array($feed['history'])) $feed['history'] = array('rule' => array());
-    
+	
     foreach ($data['channel']['item'] as $item) {
         foreach ($feed['history']['rule'] as $entry) {
-            if ($item['guid'] == $entry['guid']) {
+            if ($item['guid']['_content'] == $entry['guid']) {
                 continue 2;
             }
         }
         
-        $item['feed'] = $feed['uuid'];
         if ($feed['subscribe']) {
-            addTorrent($item['link'], $feed['directory']);
+            add_torrent(get_download($item), $feed['directory']);
             $item['downloaded'] = true;
         } else {
             foreach ($a_filters as $filter) {
@@ -66,14 +76,23 @@ foreach ($a_feeds as &$feed) {
                 if (preg_match('/'.$filter['filter'].'/i', $item['title']))
                 {
                     if (isset($config['rss']['debug'])) write_log("RSS: {$item['title']} matches {$filter['filter']}");
-                    addTorrent($item['link'], !empty($filter['directory']) ? $filter['directory'] : $feed['directory']);
+                    addTorrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory']);
                     $item['filter'] = $filter['uuid'];
                     $item['downloaded'] = true;
                 }
             }
         }
         
-        $feed['history']['rule'][] = $item;
+        $feed['history']['rule'][] = array(
+            'title' => $item['title'],
+            'guid' => $item['guid']['_content'],
+            'description' => $item['description'],
+            'pubDate' => $item['pubDate'],
+            'link' => get_download($item),
+            'downloaded' => $item['downloaded'],
+            'feed' => $feed['uuid'],
+            'filter' => $item['uuid']
+        );
     }   
 }
 
