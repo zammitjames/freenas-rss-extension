@@ -1,11 +1,13 @@
 #!/usr/local/bin/php
 <?php
+require_once("util.inc");
 require_once("config.inc");
 require_once("XML/Unserializer.php");
 
 function addTorrent($torrent, $folder = '') {
     global $config;
     
+    if (isset($config['rss']['debug'])) write_log("RSS: Downloading " . basename($torrent) . " to $folder");
     $file = md5($torrent);
     exec("fetch -o /tmp/{$file}.torrent \"$torrent\"", $output, $retVal);
     
@@ -21,7 +23,10 @@ function addTorrent($torrent, $folder = '') {
 }
 
 // We don't have any feeds, just exit.  Filters are not required.
-if (!isset($config['rss']) || !isset($config['rss']['feeds']) || !isset($config['rss']['feeds']['rule'])) exit();
+if (!isset($config['rss']) || !isset($config['rss']['feeds']) || !isset($config['rss']['feeds']['rule'])) {
+    if (isset($config['rss']['debug'])) write_log("RSS: No valid configuration");
+    exit();
+}
 
 $a_feeds = &$config['rss']['feeds']['rule'];
 if (isset($config['rss']) && isset($config['rss']['filters']))
@@ -33,6 +38,8 @@ $Unserializer = &new XML_Unserializer();
 
 foreach ($a_feeds as &$feed) {
     if(!isset($feed['enabled'])) continue;
+
+    if (isset($config['rss']['debug'])) write_log("RSS: Getting feed {$feed['name']}");
     
     $status = $Unserializer->unserialize($feed['_url'], true);
     if (PEAR::isError($status)) die($status->getMessage());
@@ -42,8 +49,9 @@ foreach ($a_feeds as &$feed) {
     
     foreach ($data['channel']['item'] as $item) {
         foreach ($feed['history']['rule'] as $entry) {
-            if ($item['guid'] == $entry['guid'])
+            if ($item['guid'] == $entry['guid']) {
                 continue 2;
+            }
         }
         
         $item['feed'] = $feed['uuid'];
@@ -57,6 +65,7 @@ foreach ($a_feeds as &$feed) {
                 
                 if (preg_match('/'.$filter['filter'].'/i', $item['title']))
                 {
+                    if (isset($config['rss']['debug'])) write_log("RSS: {$item['title']} matches {$filter['filter']}");
                     addTorrent($item['link'], !empty($filter['directory']) ? $filter['directory'] : $feed['directory']);
                     $item['filter'] = $filter['uuid'];
                     $item['downloaded'] = true;
@@ -68,4 +77,5 @@ foreach ($a_feeds as &$feed) {
     }   
 }
 
+if (isset($config['rss']['debug'])) write_log("RSS: Saving data");
 write_config();
