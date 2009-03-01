@@ -5,7 +5,8 @@ require_once("config.inc");
 $TRANSMISSION = array(
     'user' => 'admin',
     'pass' => $config['bittorrent']['password'],
-    'downloaddir' => $config['bittorrent']['downloaddir']
+    'downloaddir' => $config['bittorrent']['downloaddir'],
+    'port' => $config['bittorrent']['port']
 );
 
 $config['rss']['debug'] = true;
@@ -20,7 +21,7 @@ function add_torrent($torrent, $folder = '') {
         return -1;
     }
     
-    $start = "transmission-remote --auth={$TRANSMISSION['user']}:{$TRANSMISSION['pass']}";
+    $start = "transmission-remote {$TRANSMISSION['port']} --auth={$TRANSMISSION['user']}:{$TRANSMISSION['pass']}";
     $cmd = $start;
     
     if (!empty($folder) && is_dir($folder))

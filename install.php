@@ -77,3 +77,14 @@ if (!file_exists($g['varrun_path'] . '/sysreboot.reqd') && $found == false) {
 }
 else if ($found == false)
     echo 'FreeNAS is requesting a reboot before starting new cron jobs', "\n";
+
+echo <<<EOF
+
+Finished installing the RSS extension for transmission.  Please bear
+in mind that this extension pulls most of transmission's settings
+from FreeNAS' XML configuration file.  If you have modified the
+transmission installation, you may need to modify
+{$INSTALLPATH}www/ext/rss_functions.inc
+to reflect your changes.  Look at the \$TRANSMISSION variable at the
+top of the file.
+EOF;
