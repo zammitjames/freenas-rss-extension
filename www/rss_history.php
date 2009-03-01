@@ -85,7 +85,7 @@ include("fbegin.inc");
                         <td class="listlr"><?=htmlspecialchars($entry['title']);?></td>
                         <td class="listrc"><?=htmlspecialchars($entry['pubdate']);?></td>
                         <td class="listrc">
-                            <?php if ($entry['downloaded'] === true):?>
+                            <?php if (isset($entry['downloaded'])):?>
                             <img src="status_enabled.png" border="0">
                             <?php else:?>
                             <form action="rss_history.php" method="post">
