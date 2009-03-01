@@ -1,3 +1,0 @@
-1) Upload install.php and RSS.tgz to the installation directory
-2) chmod 777 install.php
-3) Execute install.php
