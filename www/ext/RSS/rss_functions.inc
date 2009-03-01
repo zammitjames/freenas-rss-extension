@@ -2,10 +2,17 @@
 require_once("util.inc");
 require_once("config.inc");
 
+$TRANSMISSION = array(
+    'user' => 'admin',
+    'pass' => $config['bittorrent']['password'],
+    'downloaddir' => $config['bittorrent']['downloaddir']
+);
+
 $config['rss']['debug'] = true;
 
 function add_torrent($torrent, $folder = '') {
-    global $config;
+    global $config, $TRANSMISSION;
+    
     $file = '/tmp/' . md5($torrent) . '.torrent';
     
     if (copy($torrent, $file) !== TRUE) {
@@ -13,7 +20,7 @@ function add_torrent($torrent, $folder = '') {
         return -1;
     }
     
-    $start = "transmission-remote --auth=admin:{$config['bittorrent']['password']}";
+    $start = "transmission-remote --auth={$TRANSMISSION['user']}:{$TRANSMISSION['pass']}";
     $cmd = $start;
     
     if (!empty($folder) && is_dir($folder))
@@ -26,7 +33,7 @@ function add_torrent($torrent, $folder = '') {
     if ($match[1] != "success") $retVal = "-1 {$match[1]}";
 
     // just to be safe, set everything back to the default download directory
-    $cmd = $start . ' --download-dir=' . escapeshellarg($config['bittorrent']['downloaddir']). ' 2>&1';
+    $cmd = $start . ' --download-dir=' . escapeshellarg($TRANSMISSION['downloaddir']). ' 2>&1';
     exec($cmd);
     unlink($file);
     if ($retVal != 0) {
