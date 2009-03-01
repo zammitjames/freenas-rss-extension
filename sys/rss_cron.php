@@ -1,32 +1,12 @@
 #!/usr/local/bin/php
 <?php
-require_once("util.inc");
-require_once("config.inc");
+require('ext/RSS/rss_functions.inc');
 require_once("XML/Unserializer.php");
 
 function get_download($item) {
     if (isset($item['enclosure']) && isset($item['enclosure']['attributes'])  && $item['enclosure']['attributes']['type'] == 'application/x-bittorrent')
         return $item['enclosure']['attributes']['url'];
     return $item['link'];
-}
-
-function add_torrent($torrent, $folder = '') {
-    global $config;
-    
-    if (isset($config['rss']['debug'])) write_log("RSS: Downloading " . basename($torrent) . " to $folder");
-    $file = md5($torrent);
-    exec("fetch -o/tmp/{$file}.torrent \"$torrent\"", $output, $retVal);
-    
-    $cmd = "transmission-remote --auth=admin:{$config['bittorrent']['password']}";
-    
-    if (!empty($folder) && is_dir($folder))
-        $cmd .= " --download-dir=\"$folder\"";
-    
-    // just to be safe, set everything back to the default download directory
-    $cmd .= " -a /tmp/{$file}.torrent --download-dir=\"{$config['bittorrent']['downloaddir']}\" 2>&1";
-    
-    mwexec2($cmd, $output, $retVal);
-    unlink("/tmp/{$file}.torrent");
 }
 
 // We don't have any feeds, just exit.  Filters are not required.
@@ -57,7 +37,7 @@ foreach ($a_feeds as &$feed) {
     
     $data = $Unserializer->getUnserializedData();
     if (!is_array($feed['history'])) $feed['history'] = array('rule' => array());
-	
+
     foreach ($data['channel']['item'] as $item) {
         foreach ($feed['history']['rule'] as $entry) {
             if ($item['guid']['_content'] == $entry['guid']) {
@@ -66,8 +46,7 @@ foreach ($a_feeds as &$feed) {
         }
         
         if ($feed['subscribe']) {
-            add_torrent(get_download($item), $feed['directory']);
-            $item['downloaded'] = true;
+            if (add_torrent(get_download($item), $feed['directory'])) $item['downloaded'] = true;
         } else {
             foreach ($a_filters as $filter) {
                 if (!isset($filter['enabled'])) continue;
@@ -76,9 +55,11 @@ foreach ($a_feeds as &$feed) {
                 if (preg_match('/'.$filter['filter'].'/i', $item['title']))
                 {
                     if (isset($config['rss']['debug'])) write_log("RSS: {$item['title']} matches {$filter['filter']}");
-                    addTorrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory']);
-                    $item['filter'] = $filter['uuid'];
-                    $item['downloaded'] = true;
+                    if (add_torrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory']) == 0) {
+                        $item['filter'] = $filter['uuid'];
+                        $item['downloaded'] = true;
+                    }
+                    else if (isset($config['rss']['debug'])) write_log("RSS: Unable to add {$item['title']} from " . get_download($item));
                 }
             }
         }
@@ -89,7 +70,7 @@ foreach ($a_feeds as &$feed) {
             'description' => $item['description'],
             'pubDate' => $item['pubDate'],
             'link' => get_download($item),
-            'downloaded' => $item['downloaded'],
+            'downloaded' => (isset($item['downloaded']) ? true : false),
             'feed' => $feed['uuid'],
             'filter' => $item['uuid']
         );
