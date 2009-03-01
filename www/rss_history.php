@@ -12,6 +12,9 @@ $a_feeds = &$config['rss']['feeds']['rule'];
 
 if (isset($_POST['id'])) {
     $id = $_POST['id'];
+    if (!is_array($a_feeds[$id]['history']) || !is_array($a_feeds[$id]['history']['rule']))
+        $a_feeds[$id]['history'] = array('rule' => array());
+    
     usort($a_feeds[$id]['history']['rule'], "usort_by_pubdate");
 }
 
