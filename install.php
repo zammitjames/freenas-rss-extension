@@ -12,7 +12,7 @@ $INSTALLPATH = getcwd() . '/';
 if (!is_dir($WWWPATH.'ext')) mkdir($WWWPATH.'ext');
 
 foreach (glob('www/*.php') as $filename) {
-    echo 'Linking ', $filename, ' as ', $WWWPATH, basename($filename), "\n";
+    echo 'Linking ', $filename, ' as ', $WWWPATH, 'extension_', basename($filename), "\n";
     if (!file_exists($WWWPATH . 'extension_' . basename($filename))) symlink($INSTALLPATH . $filename, $WWWPATH . 'extension_' . basename($filename));
 }
 

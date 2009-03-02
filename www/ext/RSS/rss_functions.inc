@@ -9,8 +9,6 @@ $TRANSMISSION = array(
     'port' => $config['bittorrent']['port']
 );
 
-$config['rss']['debug'] = true;
-
 function add_torrent($torrent, $folder = '') {
     global $config, $TRANSMISSION;
     
