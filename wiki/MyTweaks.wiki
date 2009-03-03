@@ -1,0 +1,25 @@
+#summary My tweaks to FreeNAS to make my operation of it smoother and friendlier
+
+= Introduction =
+
+I love FreeNAS, but there are things that drive me nuts about it.  This is my documentation of what I do to make my life with FreeNAS more pain free.  Also included are things that I attempted that didn't work, just so others do not have to suffer the same fate ;)
+
+= Details =
+
+== CIFS/SMB + Transmission = File Permission Hell ==
+
+Transmission is great, but after I get the files downloaded, I tend to want to move them around.  Due to some kind of permission hell (ie, transmission sticking really restrictive permissions on files.) This tended to be a problem.  CIFS/SMB in Anonymous mode force the user and group to ftp.  Transmission can't use the ftp user due to it's use of /usr/sbin/nologin for a shell.  So to make the two play nice I added the following into the Auxiliary parameters for CIFS/SMB
+
+{{{
+force group = wheel
+force user = transmission
+}}}
+
+Since this will come after the force group/force user that FreeNAS sticks in there, CIFS/SMB will now use the same user/group that transmission does, problem solved!
+
+== settings.json blocklist_enabled ==
+
+By default (for whatever reason) FreeNAS disables the use of blocklists in transmission.  Simply editing the settings.json won't fix it, since it's the rc.d script telling transmission not to.  To solve this we need to add a new rc.conf variable in System|Advanced|rc.conf
+
+|Variable|Value|Comment|
+|transmission_noblocklist|NO|Stop turning off my blocklist!|
