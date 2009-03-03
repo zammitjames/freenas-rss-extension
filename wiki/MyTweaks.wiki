@@ -21,5 +21,5 @@ Since this will come after the force group/force user that FreeNAS sticks in the
 
 By default (for whatever reason) FreeNAS disables the use of blocklists in transmission.  Simply editing the settings.json won't fix it, since it's the rc.d script telling transmission not to.  To solve this we need to add a new rc.conf variable in System|Advanced|rc.conf
 
-|Variable|Value|Comment|
-|transmission_noblocklist|NO|Stop turning off my blocklist!|
+||Variable||Value||Comment||
+||transmission_noblocklist||NO||Stop turning off my blocklist!||
