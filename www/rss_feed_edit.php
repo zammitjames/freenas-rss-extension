@@ -71,7 +71,7 @@ if ($_POST) {
 
         write_config();
 
-        header("Location: rss_feed_manage.php");
+        header("Location: extension_rss_feed_manage.php");
         exit;
     }
 }
