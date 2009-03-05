@@ -36,9 +36,19 @@ foreach ($a_feeds as &$feed) {
     if (PEAR::isError($status)) die($status->getMessage());
     
     $data = $Unserializer->getUnserializedData();
+    if ($data == false) {
+        if (isset($config['rss']['debug'])) write_log("RSS: Unable to unserialize {$feed['name']}");
+        continue;
+    }
+    
     if (!is_array($feed['history'])) $feed['history'] = array('rule' => array());
 
     foreach ($data['channel']['item'] as $item) {
+        if (!is_array($item)) {
+            if (isset($config['rss']['debug'])) write_log("RSS: Invalid feed data for {$feed['name']}");
+            continue;
+        }
+        
         foreach ($feed['history']['rule'] as $entry) {
             if ($item['guid']['_content'] == $entry['guid']) {
                 continue 2;
