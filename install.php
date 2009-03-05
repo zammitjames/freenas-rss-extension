@@ -9,6 +9,9 @@ require_once('updatenotify.inc');
 $WWWPATH = '/usr/local/www/';
 $INSTALLPATH = getcwd() . '/';
 
+echo 'Extracting RSS.tgz', "\n";
+exec('tar -xzf RSS.tgz');
+
 if (!is_dir($WWWPATH.'ext')) mkdir($WWWPATH.'ext');
 
 foreach (glob('www/*.php') as $filename) {
