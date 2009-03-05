@@ -25,15 +25,15 @@ include("fbegin.inc");
     <tr>
         <td class="tabnavtbl">
             <ul id="tabnav">
-                <li class="tabinact"><a href="rss_feed_manage.php"><span><?=gettext("Feeds");?></span></a></li>
-                <li class="tabact"><a href="rss_filter_manage.php" title="<?=gettext("Reload page");?>"><span><?=gettext("Filters");?></span></a></li>
-                <li class="tabinact"><a href="rss_history.php"><span><?=gettext("History");?></span></a></li>
+                <li class="tabinact"><a href="extension_rss_feed_manage.php"><span><?=gettext("Feeds");?></span></a></li>
+                <li class="tabact"><a href="extension_rss_filter_manage.php" title="<?=gettext("Reload page");?>"><span><?=gettext("Filters");?></span></a></li>
+                <li class="tabinact"><a href="extension_rss_history.php"><span><?=gettext("History");?></span></a></li>
             </ul>
         </td>
     </tr>
     <tr>
         <td class="tabcont">
-            <form action="rss_feed_manage.php" method="post">
+            <form action="extension_rss_feed_manage.php" method="post">
                 <?php if ($savemsg) print_info_box($savemsg); ?>
                 <table width="100%" border="0" cellpadding="0" cellspacing="0">
                     <tr>
@@ -60,14 +60,14 @@ include("fbegin.inc");
                             <?php endif;?>
                         </td>
                         <td valign="middle" nowrap class="list">
-                            <a href="rss_filter_edit.php?id=<?=$i;?>"><img src="e.gif" title="<?=gettext("Edit filter");?>" border="0"></a>&nbsp;
-                            <a href="rss_filter_manage.php?act=del&id=<?=$i;?>" onclick="return confirm('<?=gettext("Do you really want to delete this filter?"); ?>')"><img src="x.gif" title="<?=gettext("Delete filter"); ?>" border="0"></a>
+                            <a href="extension_rss_filter_edit.php?id=<?=$i;?>"><img src="e.gif" title="<?=gettext("Edit filter");?>" border="0"></a>&nbsp;
+                            <a href="extension_rss_filter_manage.php?act=del&id=<?=$i;?>" onclick="return confirm('<?=gettext("Do you really want to delete this filter?"); ?>')"><img src="x.gif" title="<?=gettext("Delete filter"); ?>" border="0"></a>
                         </td>
                     </tr>
                     <?php $i++; endforeach;?>
                     <tr>
                         <td class="list" colspan="6"></td>
-                        <td class="list"> <a href="rss_filter_edit.php"><img src="plus.gif" title="<?=gettext("Add feed"); ?>" border="0"></a></td>
+                        <td class="list"> <a href="extension_rss_filter_edit.php"><img src="plus.gif" title="<?=gettext("Add feed"); ?>" border="0"></a></td>
                     </tr>
                 </table>
             </form>

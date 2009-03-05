@@ -50,15 +50,15 @@ include("fbegin.inc");
     <tr>
         <td class="tabnavtbl">
         <ul id="tabnav">
-                <li class="tabinact"><a href="rss_feed_manage.php"><span><?=gettext("Feeds");?></span></a></li>
-                <li class="tabinact"><a href="rss_filter_manage.php"><span><?=gettext("Filters");?></span></a></li>
-                <li class="tabact"><a href="rss_history.php" title="<?=gettext("Reload page");?>"><span><?=gettext("History");?></span></a></li>
+                <li class="tabinact"><a href="extension_rss_feed_manage.php"><span><?=gettext("Feeds");?></span></a></li>
+                <li class="tabinact"><a href="extension_rss_filter_manage.php"><span><?=gettext("Filters");?></span></a></li>
+                <li class="tabact"><a href="extension_rss_history.php" title="<?=gettext("Reload page");?>"><span><?=gettext("History");?></span></a></li>
         </ul>
         </td>
     </tr>
     <tr>
         <td class="tabcont">
-        <form action="rss_history.php" method="post">
+        <form action="extension_rss_history.php" method="post">
             Select Feed: 
             <select name='id' onchange="submit()">
                 <?php if (!isset($id)): ?><option></option><?php endif; ?>
@@ -72,7 +72,7 @@ include("fbegin.inc");
 <?php if (isset($id)): ?>
   <tr>
     <td class="tabcont">
-            <form action="rss_history.php" method="post">
+            <form action="extension_rss_history.php" method="post">
                 <?php if ($savemsg) print_info_box($savemsg); ?>
                 <table width="100%" border="0" cellpadding="0" cellspacing="0">
                     <tr>
@@ -91,7 +91,7 @@ include("fbegin.inc");
                             <?php if (isset($entry['downloaded'])):?>
                             <img src="status_enabled.png" border="0">
                             <?php else:?>
-                            <form action="rss_history.php" method="post">
+                            <form action="extension_rss_history.php" method="post">
                             <input type="hidden" name="act" value="down" />
                             <input type="hidden" name="id" value="<?=$id;?>" />
                             <input type="hidden" name="did" value="<?=$i; ?>" />
@@ -100,7 +100,7 @@ include("fbegin.inc");
                             <?php endif;?>
                         </td>
                         <!-- td valign="middle" nowrap class="list">
-                            <a href="rss_filter_manage.php?act=del&id=<?=$i;?>" onclick="return confirm('<?=gettext("Do you really want to delete this entry?"); ?>')"><img src="x.gif" title="<?=gettext("Delete filter"); ?>" border="0"></a>
+                            <a href="extension_rss_filter_manage.php?act=del&id=<?=$i;?>" onclick="return confirm('<?=gettext("Do you really want to delete this entry?"); ?>')"><img src="x.gif" title="<?=gettext("Delete filter"); ?>" border="0"></a>
                         </td -->
                     </tr>
                     <?php $i++; endforeach;?>

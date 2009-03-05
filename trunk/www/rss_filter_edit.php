@@ -71,7 +71,7 @@ if ($_POST) {
 
         write_config();
 
-        header("Location: rss_filter_manage.php");
+        header("Location: extension_rss_filter_manage.php");
         exit;
     }
 }
@@ -83,15 +83,15 @@ if ($_POST) {
     <tr>
         <td class="tabnavtbl">
             <ul id="tabnav">
-                <li class="tabinact"><a href="rss_feed_manage.php"><span><?=gettext("Feeds");?></span></a></li>
-                <li class="tabact"><a href="rss_filter_manage.php" title="<?=gettext("Reload page");?>"><span><?=gettext("Filters");?></span></a></li>
-                <li class="tabinact"><a href="rss_history.php"><span><?=gettext("History");?></span></a></li>
+                <li class="tabinact"><a href="extension_rss_feed_manage.php"><span><?=gettext("Feeds");?></span></a></li>
+                <li class="tabact"><a href="extension_rss_filter_manage.php" title="<?=gettext("Reload page");?>"><span><?=gettext("Filters");?></span></a></li>
+                <li class="tabinact"><a href="extension_rss_history.php"><span><?=gettext("History");?></span></a></li>
             </ul>
         </td>
     </tr>
     <tr>
         <td class="tabcont">
-            <form action="rss_filter_edit.php" method="post" name="iform" id="iform">
+            <form action="extension_rss_filter_edit.php" method="post" name="iform" id="iform">
                 <?php if ($input_errors) print_input_errors($input_errors); ?>
                 <table width="100%" border="0" cellpadding="6" cellspacing="0">
                     <?php html_inputbox("name", gettext("Name"), $pconfig['name'], gettext("You may enter a name here for your reference."), true, 40);?>
