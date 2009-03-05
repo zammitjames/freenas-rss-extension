@@ -1,0 +1,14 @@
+#summary How to uninstall FreeNAS RSS Extension for Transmission
+#labels Featured
+
+= Introduction =
+
+There currently is no uninstall file to automate the process, but uninstallation is not overly difficult.
+
+
+= Details =
+  # `rm /usr/local/www/extension_rss_*`
+  # `rm -rf /usr/local/www/ext/rss/`
+  # `rm -rf YOUR_INSTALL_DIR`
+  # Delete the cron job in System|Advanced|cron
+  # Enter the following Advanced|Execute command in the PHP command textbox: {{{ unset($config['rss']); }}}
