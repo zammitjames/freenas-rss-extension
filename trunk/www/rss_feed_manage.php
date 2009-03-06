@@ -3,8 +3,9 @@
 require('guiconfig.inc');
 
 $pgtitle = array(gettext('Extensions'), gettext('RSS'), gettext('Feeds'));
-if (!is_array($config['rss'])) $config['rss'] = array();
+
 if (!is_array($config['rss']['feeds'])) $config['rss']['feeds'] = array('rule'=>array());
+array_sort_key($config['rss']['feeds']['rule'], "name");
 
 $a_feeds = &$config['rss']['feeds']['rule'];
 

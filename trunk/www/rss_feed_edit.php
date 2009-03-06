@@ -8,10 +8,7 @@ if (isset($_POST['id']))
 
 $pgtitle = array(gettext('Extensions'), gettext("RSS"),gettext("Feed"),isset($id)?gettext("Edit"):gettext("Add"));
 
-if (!is_array($config['rss'])) $config['rss'] = array();
 if (!is_array($config['rss']['feeds'])) $config['rss']['feeds'] = array('rule'=>array());
-if (!is_array($config['rss']['feeds']['rule'])) $config['rss']['feeds']['rule'] = array();
-
 array_sort_key($config['rss']['feeds']['rule'], "name");
 
 $a_feed = &$config['rss']['feeds']['rule'];
