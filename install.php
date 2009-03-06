@@ -64,7 +64,7 @@ if (!is_array($config['rss'])) {
     echo 'Initializing configuration', "\n";
     $config['rss'] = array(
         'feeds' => array('rule' => array()),
-        'filter' => array('rule' => array())
+        'filters' => array('rule' => array())
     );
 }
 

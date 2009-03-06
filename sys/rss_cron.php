@@ -9,14 +9,15 @@ function get_download($item) {
     return $item['link'];
 }
 
-function debug_log($message) {
+function rss_log($message) {
+    global $config;
     if (isset($config['rss']['debug']))
         write_log("RSS: $message");
 }
 
 // We don't have any feeds, just exit.  Filters are not required.
 if (!isset($config['rss']) || !isset($config['rss']['feeds']) || !isset($config['rss']['feeds']['rule'])) {
-    debug_log("No valid configuration");
+    rss_log("No valid configuration");
     exit();
 }
 
@@ -35,14 +36,14 @@ $Unserializer = &new XML_Unserializer($options);
 foreach ($a_feeds as &$feed) {
     if(!isset($feed['enabled'])) continue;
 
-    debug_log("Getting feed {$feed['name']}");
+    rss_log("Getting feed {$feed['name']}");
     
     $status = $Unserializer->unserialize($feed['_url'], true);
     if (PEAR::isError($status)) die($status->getMessage());
     
     $data = $Unserializer->getUnserializedData();
     if ($data == false) {
-        debug_log("Unable to unserialize {$feed['name']}");
+        rss_log("Unable to unserialize {$feed['name']}");
         continue;
     }
     
@@ -50,7 +51,7 @@ foreach ($a_feeds as &$feed) {
 
     foreach ($data['channel']['item'] as $item) {
         if (!is_array($item)) {
-            debug_log("Invalid feed data for {$feed['name']}");
+            rss_log("Invalid feed data for {$feed['name']}");
             continue;
         }
         
@@ -69,29 +70,31 @@ foreach ($a_feeds as &$feed) {
                 
                 if (preg_match('/'.$filter['filter'].'/i', $item['title']))
                 {
-                    debug_log("{$item['title']} matches {$filter['filter']}");
-                    // Are we trying to smart filter?
+                    rss_log("{$item['title']} matches {$filter['filter']}");
+
                     if (isset($filter['smart'])) {
-                        preg_match('/\W(?:S(\d+)E(\d+)|(\d+)x(\d+)(?:\.(\d+))?)\W/', $item['title'], $match);
+                        if(!preg_match('/\W(?:S(\d+)E(\d+)|(\d+)x(\d+)(?:\.(\d+))?)\W/', $item['title'], $match))
+                            continue;
+                        
                         $id = implode('x', array_slice($match, 3));
                         if (is_array($filter['episodes']) && is_array($filter['episodes']['rule'])) {
-                            foreach ($filter['episodes']['rule'] as $episode) {
-                                debug_log("Already have episode $id");
-                                if ($episode == $id) continue 2;
+                            if (in_array($id, $filter['episodes']['rule'])) {
+                                rss_log("Already have episode $id");
+                                continue 2;
                             }
                             $filter['episodes']['rule'][] = $id;
                         }
                         else
                             $filter['episodes'] = array('rule' => array($id));
                             
-                        debug_log("New epidose $id");
+                        rss_log("New epidose $id");
                     }
                     
                     if (add_torrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory']) == 0) {
                         $item['filter'] = $filter['uuid'];
                         $item['downloaded'] = true;
                     }
-                    else debug_log("Unable to add {$item['title']} from " . get_download($item));
+                    else rss_log("Unable to add {$item['title']} from " . get_download($item));
                 }
             }
         }
@@ -109,5 +112,5 @@ foreach ($a_feeds as &$feed) {
     }   
 }
 
-debug_log("Saving data");
+rss_log("Saving data");
 write_config();
