@@ -58,13 +58,26 @@ foreach ($a_feeds as &$feed) {
         if ($feed['subscribe']) {
             if (add_torrent(get_download($item), $feed['directory'])) $item['downloaded'] = true;
         } else {
-            foreach ($a_filters as $filter) {
+            foreach ($a_filters as &$filter) {
                 if (!isset($filter['enabled'])) continue;
                 if ($filter['feed'] != -1 && $filter['feed'] != $feed['uuid']) continue;
                 
                 if (preg_match('/'.$filter['filter'].'/i', $item['title']))
                 {
                     if (isset($config['rss']['debug'])) write_log("RSS: {$item['title']} matches {$filter['filter']}");
+                    // Are we trying to smart filter?
+                    if (isset($filter['smart'])) {
+                        preg_match('/\W(?:S(\d+)E(\d+)|(\d+)x(\d+)(?:\.(\d+))?)\W/', $item['title'], $match);
+                        $id = implode('x', array_slice($match, 3));
+                        if (is_array($filter['episodes']) && is_array($filter['episodes']['rule'])) {
+                            foreach ($filter['episodes']['rule'] as $episode) {
+                                if ($episode == $id) continue 2;
+                            }   
+                        }
+                        else
+                            $filter['episodes'] = array('rule' => array());
+                    }
+                    
                     if (add_torrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory']) == 0) {
                         $item['filter'] = $filter['uuid'];
                         $item['downloaded'] = true;
