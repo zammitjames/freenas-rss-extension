@@ -21,7 +21,8 @@ if (isset($id) && $a_filter[$id]) {
     $pconfig['directory'] = $a_filter[$id]['directory'];
     $pconfig['enabled'] = $a_filter[$id]['enabled'];
     $pconfig['feed'] = $a_filter[$id]['feed'];
-		$pconfig['smart'] = $a_filter[$id]['smart'];
+    $pconfig['smart'] = $a_filter[$id]['smart'];
+    $pconfig['episodes'] = $a_filter[$id]['episodes'];
 } else {
     $pconfig['uuid'] = uuid();
     $pconfig['name'] = '';
@@ -29,7 +30,7 @@ if (isset($id) && $a_filter[$id]) {
     $pconfig['directory'] = '';
     $pconfig['enabled'] = false;
     $pconfig['feed'] = -1;
-		$pconfig['smart'] = false;
+    $pconfig['episodes'] = array();
 }
 
 if ($_POST) {
@@ -61,7 +62,8 @@ if ($_POST) {
         $filter['directory'] = $_POST['directory'];
         $filter['enabled'] = $_POST['enabled'] ? true : false;
         $filter['feed'] = $_POST['feed'];
-				$filter['smart'] = $_POST['smart'];
+        $filter['smart'] = $_POST['smart'];
+        $filter['episodes'] = unserialize($_POST['episodes']);
 
         if (isset($id) && $a_filter[$id]) {
             $a_filter[$id] = $filter;
@@ -126,6 +128,7 @@ if ($_POST) {
                 <div id="submit">
                     <input name="Submit" type="submit" class="formbtn" value="<?=((isset($id) && $a_filter[$id]))?gettext("Save"):gettext("Add")?>">
                     <input name="uuid" type="hidden" value="<?=$pconfig['uuid'];?>">
+                    <input name="episodes" type="hidden" value="<?=serialize($pconfig['episodes']);?>">
                     <?php if (isset($id) && $a_filter[$id]): ?>
                     <input name="id" type="hidden" value="<?=$id;?>">
                     <?php endif; ?>
