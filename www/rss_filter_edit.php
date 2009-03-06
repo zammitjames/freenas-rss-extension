@@ -8,10 +8,6 @@ if (isset($_POST['id']))
 
 $pgtitle = array(gettext('Extensions'), gettext("RSS"),gettext("Filter"),isset($id)?gettext("Edit"):gettext("Add"));
 
-if (!is_array($config['rss'])) $config['rss'] = array();
-if (!is_array($config['rss']['filters'])) $config['rss']['filters'] = array('rule'=>array());
-if (!is_array($config['rss']['filters']['rule'])) $config['rss']['filters']['rule'] = array();
-
 array_sort_key($config['rss']['filters']['rule'], "name");
 
 $a_filter = &$config['rss']['filters']['rule'];
@@ -24,6 +20,7 @@ if (isset($id) && $a_filter[$id]) {
     $pconfig['directory'] = $a_filter[$id]['directory'];
     $pconfig['enabled'] = $a_filter[$id]['enabled'];
     $pconfig['feed'] = $a_filter[$id]['feed'];
+		$pconfig['smart'] = $a_filter[$id]['smart'];
 } else {
     $pconfig['uuid'] = uuid();
     $pconfig['name'] = '';
@@ -31,6 +28,7 @@ if (isset($id) && $a_filter[$id]) {
     $pconfig['directory'] = '';
     $pconfig['enabled'] = false;
     $pconfig['feed'] = -1;
+		$pconfig['smart'] = false;
 }
 
 if ($_POST) {
@@ -62,6 +60,7 @@ if ($_POST) {
         $filter['directory'] = $_POST['directory'];
         $filter['enabled'] = $_POST['enabled'] ? true : false;
         $filter['feed'] = $_POST['feed'];
+				$filter['smart'] = $_POST['smart'];
 
         if (isset($id) && $a_filter[$id]) {
             $a_filter[$id] = $filter;
@@ -102,6 +101,13 @@ if ($_POST) {
                         <td width="78%" class="vtable">
                             <input name="enabled" type="checkbox" id="enabled" value="yes" <?php if (isset($pconfig['enabled'])) echo "checked";?>>
                             <span class="vexpl"><?=gettext("Enable this filter.");?></span>
+                        </td>
+                    </tr>
+										<tr>
+                        <td width="22%" valign="top" class="vncell"><?=gettext("Smart Filter");?></td>
+                        <td width="78%" class="vtable">
+                            <input name="smart" type="checkbox" id="smart" value="yes" <?php if (isset($pconfig['enabled'])) echo "checked";?>>
+                            <span class="vexpl"><?=gettext("Attempt to filter series episodes.");?></span>
                         </td>
                     </tr>
                     <tr>
