@@ -48,6 +48,11 @@ foreach ($a_feeds as &$feed) {
     }
     
     if (!is_array($feed['history'])) $feed['history'] = array('rule' => array());
+    
+    if (!isset($data['channel']['item'])) {
+        rss_log("No item data");
+        continue;
+    }
 
     foreach ($data['channel']['item'] as $item) {
         if (!is_array($item)) {
