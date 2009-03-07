@@ -14,13 +14,17 @@ exec('tar -xzf RSS.tgz');
 
 if (!is_dir($WWWPATH.'ext')) mkdir($WWWPATH.'ext');
 
+# Clean up old files
+exec("rm {$WWWPATH}extension_rss_*");
+exec("rm -rf {$WWWPATH}ext/RSS");
+
 foreach (glob('www/*.php') as $filename) {
     echo 'Linking ', $filename, ' as ', $WWWPATH, 'extension_', basename($filename), "\n";
-    if (!file_exists($WWWPATH . 'extension_' . basename($filename))) symlink($INSTALLPATH . $filename, $WWWPATH . 'extension_' . basename($filename));
+    symlink($INSTALLPATH . $filename, $WWWPATH . 'extension_' . basename($filename));
 }
 
 echo 'Linking ext directory', "\n";
-if (!is_dir($WWWPATH.'ext/RSS')) symlink($INSTALLPATH . 'www/ext/RSS', $WWWPATH.'ext/RSS');
+symlink($INSTALLPATH . 'www/ext/RSS', $WWWPATH.'ext/RSS');
 
 $min = date('i');
 if ($min > 14) $min %= 15;
@@ -44,7 +48,7 @@ if (!$found) {
     $cronjob['enable'] = true;
     $cronjob['uuid'] = uuid();
     $cronjob['desc'] = 'RSS Cron Job';
-    $cronjob['minute'] = array( $min, $min + 15, $min + 30, $min + 45);
+    $cronjob['minute'] = array($min, $min + 15, $min + 30, $min + 45);
     $cronjob['hour'] = array();
     $cronjob['day'] = array();
     $cronjob['month'] = array();
