@@ -11,4 +11,8 @@ There currently is no uninstall file to automate the process, but uninstallation
   # `rm -rf /usr/local/www/ext/rss/`
   # `rm -rf YOUR_INSTALL_DIR`
   # Delete the cron job in System|Advanced|cron
-  # Enter the following Advanced|Execute command in the PHP command textbox: {{{ unset($config['rss']); }}}
+  # Enter the following Advanced|Execute command in the PHP command textbox:
+{{{
+unset($config['rss']);
+write_config();
+}}}
