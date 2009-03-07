@@ -68,7 +68,7 @@ if ($_POST) {
         if (isset($id) && $a_filter[$id]) {
             $a_filter[$id] = $filter;
         } else {
-            $a_filter[$filter['uuid']] = $filter;
+            $a_filter[] = $filter;
         }
 
         write_config();
@@ -106,7 +106,7 @@ if ($_POST) {
                             <span class="vexpl"><?=gettext("Enable this filter.");?></span>
                         </td>
                     </tr>
-										<tr>
+                    <tr>
                         <td width="22%" valign="top" class="vncell"><?=gettext("Smart Filter");?></td>
                         <td width="78%" class="vtable">
                             <input name="smart" type="checkbox" id="smart" value="yes" <?php if (isset($pconfig['enabled'])) echo "checked";?>>
@@ -128,7 +128,7 @@ if ($_POST) {
                 <div id="submit">
                     <input name="Submit" type="submit" class="formbtn" value="<?=((isset($id) && $a_filter[$id]))?gettext("Save"):gettext("Add")?>">
                     <input name="uuid" type="hidden" value="<?=$pconfig['uuid'];?>">
-                    <input name="episodes" type="hidden" value="<?=serialize($pconfig['episodes']);?>">
+                    <input name="episodes" type="hidden" value="<?=htmlspecialchars(serialize($pconfig['episodes']));?>">
                     <?php if (isset($id) && $a_filter[$id]): ?>
                     <input name="id" type="hidden" value="<?=$id;?>">
                     <?php endif; ?>
