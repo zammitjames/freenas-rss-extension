@@ -85,7 +85,7 @@ include("fbegin.inc");
                         $i = 0; foreach ($a_feeds[$id]['history']['rule'] as $entry):
                     ?>
                     <tr>
-                        <td class="listlr"><?=htmlspecialchars($entry['title']);?></td>
+                        <td class="listlr"><?=htmlspecialchars($entry['title']);?> [<a href="#" onclick="showdesc('desc<?=$i?>', this); return false;" />more</a>]</td>
                         <td class="listrc"><?=htmlspecialchars($entry['pubdate']);?></td>
                         <td class="listrc">
                             <?php if (isset($entry['downloaded'])):?>
@@ -103,6 +103,10 @@ include("fbegin.inc");
                             <a href="extension_rss_filter_manage.php?act=del&id=<?=$i;?>" onclick="return confirm('<?=gettext("Do you really want to delete this entry?"); ?>')"><img src="x.gif" title="<?=gettext("Delete filter"); ?>" border="0"></a>
                         </td -->
                     </tr>
+                    <tr>
+                        <?php // This could be dangerous as we displaying all the description including any HTML ?>
+                        <td class="listlr" id="desc<?=$i?>" style="display:none" colspan="3"><?=$entry['description']; ?></td>
+                    </tr>
                     <?php $i++; endforeach;?>
                 </table>
             </form>
@@ -110,4 +114,11 @@ include("fbegin.inc");
     </tr>
 <?php endif; ?>
 </table>
+<script type="text/javascript">
+function showdesc(id, elem) {
+    var el = document.getElementById(id);
+    elem.innerHTML = (el.style.display != 'none' ? 'more' : 'less' );
+    el.style.display = (el.style.display != 'none' ? 'none' : '' );
+}
+</script>
 <?php include("fend.inc");?>
