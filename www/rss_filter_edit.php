@@ -109,7 +109,7 @@ if ($_POST) {
                     <tr>
                         <td width="22%" valign="top" class="vncell"><?=gettext("Smart Filter");?></td>
                         <td width="78%" class="vtable">
-                            <input name="smart" type="checkbox" id="smart" value="yes" <?php if (isset($pconfig['enabled'])) echo "checked";?>>
+                            <input name="smart" type="checkbox" id="smart" value="yes" <?php if (isset($pconfig['smart'])) echo "checked";?>>
                             <span class="vexpl"><?=gettext("Attempt to filter series episodes.");?></span>
                         </td>
                     </tr>
