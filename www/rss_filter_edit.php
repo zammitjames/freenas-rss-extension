@@ -62,7 +62,7 @@ if ($_POST) {
         $filter['directory'] = $_POST['directory'];
         $filter['enabled'] = $_POST['enabled'] ? true : false;
         $filter['feed'] = $_POST['feed'];
-        $filter['smart'] = $_POST['smart'];
+        $filter['smart'] = $_POST['smart'] ? true : false;
         $filter['episodes'] = unserialize($_POST['episodes']);
 
         if (isset($id) && $a_filter[$id]) {
