@@ -95,8 +95,8 @@ foreach ($a_feeds as &$feed) {
                         rss_log("New epidose $id");
                     }
                     
+                    $item['filter'] = $filter['uuid'];
                     if (add_torrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory']) == 0) {
-                        $item['filter'] = $filter['uuid'];
                         $item['downloaded'] = true;
                     }
                     else rss_log("Unable to add {$item['title']} from " . get_download($item));
@@ -111,8 +111,7 @@ foreach ($a_feeds as &$feed) {
             'pubDate' => $item['pubDate'],
             'link' => get_download($item),
             'downloaded' => (isset($item['downloaded']) ? true : false),
-            'feed' => $feed['uuid'],
-            'filter' => $item['uuid']
+            'filter' => (isset($item['filter']) ? $item['filter'] : false)
         );
     }   
 }

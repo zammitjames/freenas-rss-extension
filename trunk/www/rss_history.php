@@ -6,9 +6,13 @@ require_once('ext/RSS/rss_functions.inc');
 $pgtitle = array(gettext('Extensions'), gettext('RSS'), gettext('History'));
 if (!is_array($config['rss'])) $config['rss'] = array();
 if (!is_array($config['rss']['feeds'])) $config['rss']['feeds'] = array('rule'=>array());
+if (!is_array($config['rss']['filters'])) $config['rss']['filters'] = array('rule'=>array());
 
-array_sort_key($config['rss']['feeds']['rule'], "name");
+array_sort_key($config['rss']['feeds']['rule'], 'name');
+array_sort_key($config['rss']['filters']['rule'], 'name');
+
 $a_feeds = &$config['rss']['feeds']['rule'];
+$a_filters = &$config['rss']['filters']['rule'];
 
 if (isset($_POST['id'])) {
     $id = $_POST['id'];
@@ -29,18 +33,26 @@ if ($_GET['act'] === "del") {
 
 if ($_POST['act'] === "down") {
     if (isset($id) && isset($_POST['did'])) {
-        $did = $_POST['did'];
-        if(add_torrent($a_feeds[$id]['history']['rule'][$did]['link'], $a_feeds[$id]['directory']) == 0)
-        {
-            $data = $a_feeds[$id]['history']['rule'][$did];
-            $data['downloaded'] = true;
-            $a_feeds[$id]['history']['rule'][$did] = $data;
+        $item = $a_feeds[$id]['history']['rule'][$_POST['did']];
+        
+        $directory = '';
+        
+        if (isset($item['filter'])) {
+            $directory = get_by_uuid($a_filters, $item['filter'], 'directory');
+        }
+        
+        if(empty($directory))
+            $directory = $a_feeds[$id]['directory'];
+        
+        if(add_torrent($item['link'], $directory) == 0) {
+            $item['downloaded'] = true;
+            $a_feeds[$id]['history']['rule'][$did] = $item;
             $savemsg = "Successfully downloaded ";
             write_config();
         }
         else
             $savemsg = "Error downloading ";
-        $savemsg .= "\"{$a_feeds[$id]['history']['rule'][$did]['title']}\"";
+        $savemsg .= "\"{$item['title']}\"";
     }
 }
 
