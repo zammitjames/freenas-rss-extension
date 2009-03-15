@@ -9,6 +9,12 @@ $TRANSMISSION = array(
     'port' => $config['bittorrent']['port']
 );
 
+function rss_log($message) {
+    global $config;
+    if (isset($config['rss']['debug']))
+        write_log("RSS: $message");
+}
+
 function add_torrent($torrent, $folder = '') {
     global $config, $TRANSMISSION;
     
@@ -42,12 +48,15 @@ function add_torrent($torrent, $folder = '') {
 }
 
 function get_by_uuid($array, $uuid, $field = null) {
+  $i = 0;
   foreach ($array as $item) {
     if ($item['uuid'] == $uuid) {
       if ($field == null) return $item;
-      if (isset($field) && isset($item[$field])) return $item[$field];
+      else if ($field == 'id') return $i;
+      else if (isset($field) && isset($item[$field])) return $item[$field];
       break;
     }
+    $i++;
   }
   return null;
 }

@@ -9,10 +9,16 @@ function get_download($item) {
     return $item['link'];
 }
 
-function rss_log($message) {
-    global $config;
-    if (isset($config['rss']['debug']))
-        write_log("RSS: $message");
+function add_item($feed, $item) {
+    $feed['history']['rule'][] = array(
+        'title' => $item['title'],
+        'guid' => $item['guid']['_content'],
+        'description' => $item['description'],
+        'pubDate' => $item['pubDate'],
+        'link' => get_download($item),
+        'downloaded' => (isset($item['downloaded']) ? true : false),
+        'filter' => (isset($item['filter']) ? $item['filter'] : false)
+    );
 }
 
 // We don't have any feeds, just exit.  Filters are not required.
@@ -76,6 +82,7 @@ foreach ($a_feeds as &$feed) {
                 if (preg_match('/'.$filter['filter'].'/i', $item['title']))
                 {
                     rss_log("{$item['title']} matches {$filter['filter']}");
+                    $item['filter'] = $filter['uuid'];
 
                     if (isset($filter['smart'])) {
                         if(!preg_match('/\W(?:S(\d+)E(\d+)|(\d+)x(\d+)(?:\.(\d+))?)\W/', $item['title'], $match))
@@ -85,6 +92,7 @@ foreach ($a_feeds as &$feed) {
                         if (is_array($filter['episodes']) && is_array($filter['episodes']['rule'])) {
                             if (in_array($id, $filter['episodes']['rule'])) {
                                 rss_log("Already have episode $id");
+                                add_item(&$feed, $item);
                                 continue 2;
                             }
                             $filter['episodes']['rule'][] = $id;
@@ -95,7 +103,6 @@ foreach ($a_feeds as &$feed) {
                         rss_log("New epidose $id");
                     }
                     
-                    $item['filter'] = $filter['uuid'];
                     if (add_torrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory']) == 0) {
                         $item['downloaded'] = true;
                     }
@@ -104,15 +111,7 @@ foreach ($a_feeds as &$feed) {
             }
         }
         
-        $feed['history']['rule'][] = array(
-            'title' => $item['title'],
-            'guid' => $item['guid']['_content'],
-            'description' => $item['description'],
-            'pubDate' => $item['pubDate'],
-            'link' => get_download($item),
-            'downloaded' => (isset($item['downloaded']) ? true : false),
-            'filter' => (isset($item['filter']) ? $item['filter'] : false)
-        );
+        add_item(&$feed, $item);
     }   
 }
 

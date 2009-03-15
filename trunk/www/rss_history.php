@@ -22,18 +22,9 @@ if (isset($_POST['id'])) {
     usort($a_feeds[$id]['history']['rule'], "usort_by_pubdate");
 }
 
-/*
-if ($_GET['act'] === "del") {
-    if ($a_feeds[$_GET['id']]) {
-        unset($config['rss']['filters']['rule'][$_GET['id']]);
-        write_config();
-    }
-}
-*/
-
 if ($_POST['act'] === "down") {
     if (isset($id) && isset($_POST['did'])) {
-        $item = $a_feeds[$id]['history']['rule'][$_POST['did']];
+        $item = &$a_feeds[$id]['history']['rule'][$_POST['did']];
         
         $directory = '';
         
@@ -46,7 +37,6 @@ if ($_POST['act'] === "down") {
         
         if(add_torrent($item['link'], $directory) == 0) {
             $item['downloaded'] = true;
-            $a_feeds[$id]['history']['rule'][$did] = $item;
             $savemsg = "Successfully downloaded ";
             write_config();
         }
@@ -97,7 +87,10 @@ include("fbegin.inc");
                         $i = 0; foreach ($a_feeds[$id]['history']['rule'] as $entry):
                     ?>
                     <tr>
-                        <td class="listlr"><?=htmlspecialchars($entry['title']);?> [<a href="#" onclick="showdesc('desc<?=$i?>', this); return false;" />more</a>]</td>
+                        <td class="listlr">
+                            <img src="/ext/RSS/bullet_toggle_plus.png" alt="[more]" style='vertical-align: bottom; cursor: pointer' onclick="showdesc('desc<?=$i?>', this);" />
+                            <?=htmlspecialchars($entry['title']);?>
+                            <?php if (isset($entry['filter'])): ?> <img src="/ext/RSS/lightning.png" alt="filtered" title="Matched filter: <?=get_by_uuid($a_filters, $entry['filter'], 'name'); ?>" /><?php endif; ?></td>
                         <td class="listrc"><?=htmlspecialchars($entry['pubdate']);?></td>
                         <td class="listrc">
                             <?php if (isset($entry['downloaded'])):?>
@@ -129,8 +122,16 @@ include("fbegin.inc");
 <script type="text/javascript">
 function showdesc(id, elem) {
     var el = document.getElementById(id);
-    elem.innerHTML = (el.style.display != 'none' ? 'more' : 'less' );
-    el.style.display = (el.style.display != 'none' ? 'none' : '' );
+    if (el.style.display != 'none') {
+        elem.src = '/ext/RSS/bullet_toggle_plus.png';
+        elem.alt = ' [more] ';
+        el.style.display = 'none';
+    }
+    else {
+        elem.src = '/ext/RSS/bullet_toggle_minus.png';
+        elem.alt = ' [less] ';
+        el.style.display = '';
+    }
 }
 </script>
 <?php include("fend.inc");?>
