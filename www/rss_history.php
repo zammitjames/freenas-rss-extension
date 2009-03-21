@@ -88,7 +88,9 @@ include("fbegin.inc");
                     ?>
                     <tr>
                         <td class="listlr">
+                            <?php if (isset($entry['description']) && !empty($entry['description'])): ?>
                             <img src="/ext/RSS/bullet_toggle_plus.png" alt="[more]" style='vertical-align: bottom; cursor: pointer' onclick="showdesc('desc<?=$i?>', this);" />
+                            <?php endif; ?>
                             <?=htmlspecialchars($entry['title']);?>
                             <?php if (isset($entry['filter'])): ?> <img src="/ext/RSS/lightning.png" alt="filtered" title="Matched filter: <?=get_by_uuid($a_filters, $entry['filter'], 'name'); ?>" /><?php endif; ?></td>
                         <td class="listrc"><?=htmlspecialchars($entry['pubdate']);?></td>
@@ -108,10 +110,12 @@ include("fbegin.inc");
                             <a href="extension_rss_filter_manage.php?act=del&id=<?=$i;?>" onclick="return confirm('<?=gettext("Do you really want to delete this entry?"); ?>')"><img src="x.gif" title="<?=gettext("Delete filter"); ?>" border="0"></a>
                         </td -->
                     </tr>
+                    <?php if (isset($entry['description']) && !empty($entry['description'])): ?>
                     <tr>
                         <?php // This could be dangerous as we displaying all the description including any HTML ?>
                         <td class="listlr" id="desc<?=$i?>" style="display:none" colspan="3"><?=$entry['description']; ?></td>
                     </tr>
+                    <?php endif; ?>
                     <?php $i++; endforeach;?>
                 </table>
             </form>
