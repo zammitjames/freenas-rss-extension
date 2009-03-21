@@ -9,10 +9,16 @@ function get_download($item) {
     return $item['link'];
 }
 
+function get_guid($item) {
+    if (is_array($item['guid']))
+        return $item['guid']['_content'];
+    return $item['guid'];
+}
+
 function add_item($feed, $item) {
     $feed['history']['rule'][] = array(
         'title' => $item['title'],
-        'guid' => $item['guid']['_content'],
+        'guid' => get_guid($item),
         'description' => $item['description'],
         'pubDate' => $item['pubDate'],
         'link' => get_download($item),
@@ -67,7 +73,7 @@ foreach ($a_feeds as &$feed) {
         }
         
         foreach ($feed['history']['rule'] as $entry) {
-            if ($item['guid']['_content'] == $entry['guid']) {
+            if (get_guid($item) == $entry['guid']) {
                 continue 2;
             }
         }
