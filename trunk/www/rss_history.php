@@ -2,6 +2,7 @@
 <?php
 require_once('guiconfig.inc');
 require_once('ext/RSS/rss_functions.inc');
+require_once('ext/RSS/rss_class_history.php');
 
 $pgtitle = array(gettext('Extensions'), gettext('RSS'), gettext('History'));
 if (!is_array($config['rss'])) $config['rss'] = array();
@@ -14,18 +15,14 @@ array_sort_key($config['rss']['filters']['rule'], 'name');
 $a_feeds = &$config['rss']['feeds']['rule'];
 $a_filters = &$config['rss']['filters']['rule'];
 
-if (isset($_POST['id'])) {
-    $id = $_POST['id'];
-    if (!is_array($a_feeds[$id]['history']) || !is_array($a_feeds[$id]['history']['rule']))
-        $a_feeds[$id]['history'] = array('rule' => array());
-    
-    usort($a_feeds[$id]['history']['rule'], "usort_by_pubdate");
-}
+$History = new History($config['rss']);
+$History->read();
+$list = array();
 
-if ($_POST['act'] === "down") {
-    if (isset($id) && isset($_POST['did'])) {
-        $item = &$a_feeds[$id]['history']['rule'][$_POST['did']];
-        
+if (isset($_POST['act']) && $_POST['act'] === "down") {
+    if (isset($_POST['id']) && isset($_POST['did'])) {
+        // Returned by reference so we can work on item directly
+        $item = &$History->find($a_feeds[$_POST['id']]['uuid'], $_POST['did']);
         $directory = '';
         
         if (isset($item['filter'])) {
@@ -33,17 +30,23 @@ if ($_POST['act'] === "down") {
         }
         
         if(empty($directory))
-            $directory = $a_feeds[$id]['directory'];
+            $directory = $a_feeds[$_POST['id']]['directory'];
         
         if(add_torrent($item['link'], $directory) == 0) {
-            $item['downloaded'] = true;
             $savemsg = "Successfully downloaded ";
-            write_config();
+            $item['downloaded'] = true;
+            $History->write();
         }
         else
             $savemsg = "Error downloading ";
         $savemsg .= "\"{$item['title']}\"";
     }
+}
+
+if (isset($_POST['id'])) {
+    $id = $_POST['id'];
+    $list = $History->full($a_feeds[$id]['uuid']);
+    usort($list, 'usort_by_pubdate'); // Do this in rss_cron.php
 }
 
 include("fbegin.inc");
@@ -75,7 +78,7 @@ include("fbegin.inc");
   <tr>
     <td class="tabcont">
             <form action="extension_rss_history.php" method="post">
-                <?php if ($savemsg) print_info_box($savemsg); ?>
+                <?php if (isset($savemsg)) print_info_box($savemsg); ?>
                 <table width="100%" border="0" cellpadding="0" cellspacing="0">
                     <tr>
                         <td width="75%" class="listhdrr"><?=gettext("Title"); ?></td>
@@ -84,7 +87,7 @@ include("fbegin.inc");
                         <!-- td width="10%" class="list"></td -->
                     </tr>
                     <?php
-                        $i = 0; foreach ($a_feeds[$id]['history']['rule'] as $entry):
+                        $i = 0; foreach ($list as $entry):
                     ?>
                     <tr>
                         <td class="listlr">
@@ -92,16 +95,16 @@ include("fbegin.inc");
                             <img src="/ext/RSS/bullet_toggle_plus.png" alt="[more]" style='vertical-align: bottom; cursor: pointer' onclick="showdesc('desc<?=$i?>', this);" />
                             <?php endif; ?>
                             <?=htmlspecialchars($entry['title']);?>
-                            <?php if (isset($entry['filter'])): ?> <img src="/ext/RSS/lightning.png" alt="filtered" title="Matched filter: <?=get_by_uuid($a_filters, $entry['filter'], 'name'); ?>" /><?php endif; ?></td>
-                        <td class="listrc"><?=htmlspecialchars($entry['pubdate']);?></td>
+                            <?php if ($entry['filter']): ?> <img src="/ext/RSS/lightning.png" alt="filtered" title="Matched filter: <?=get_by_uuid($a_filters, $entry['filter'], 'name'); ?>" /><?php endif; ?></td>
+                        <td class="listrc"><?=htmlspecialchars($entry['pubDate']);?></td>
                         <td class="listrc">
-                            <?php if (isset($entry['downloaded'])):?>
+                            <?php if ($entry['downloaded']):?>
                             <img src="status_enabled.png" border="0">
                             <?php else:?>
                             <form action="extension_rss_history.php" method="post">
                             <input type="hidden" name="act" value="down" />
                             <input type="hidden" name="id" value="<?=$id;?>" />
-                            <input type="hidden" name="did" value="<?=$i; ?>" />
+                            <input type="hidden" name="did" value="<?=$entry['guid']; ?>" />
                             <input type="image" src="status_disabled.png" onclick="submit();">
                             </form>
                             <?php endif;?>

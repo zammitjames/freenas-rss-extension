@@ -1,7 +1,8 @@
 #!/usr/local/bin/php
 <?php
-require('ext/RSS/rss_functions.inc');
-require_once("XML/Unserializer.php");
+require_once('ext/RSS/rss_class_history.php');
+require_once('ext/RSS/rss_functions.inc');
+require_once('XML/Unserializer.php');
 
 function get_download($item) {
     if (isset($item['enclosure']) && isset($item['enclosure']['attributes'])  && $item['enclosure']['attributes']['type'] == 'application/x-bittorrent')
@@ -10,13 +11,18 @@ function get_download($item) {
 }
 
 function get_guid($item) {
+    if (!isset($item['guid']) || empty($item['guid']))
+        return get_download($item);
+
     if (is_array($item['guid']))
         return $item['guid']['_content'];
     return $item['guid'];
 }
 
 function add_item($feed, $item) {
-    $feed['history']['rule'][] = array(
+    global $History;
+    
+    $History->add($feed['uuid'], array(
         'title' => $item['title'],
         'guid' => get_guid($item),
         'description' => $item['description'],
@@ -24,12 +30,12 @@ function add_item($feed, $item) {
         'link' => get_download($item),
         'downloaded' => (isset($item['downloaded']) ? true : false),
         'filter' => (isset($item['filter']) ? $item['filter'] : false)
-    );
+    ));
 }
 
 // We don't have any feeds, just exit.  Filters are not required.
 if (!isset($config['rss']) || !isset($config['rss']['feeds']) || !isset($config['rss']['feeds']['rule'])) {
-    rss_log("No valid configuration");
+    rss_log('No valid configuration', VERBOSE_ERROR);
     exit();
 }
 
@@ -38,6 +44,9 @@ if (isset($config['rss']) && isset($config['rss']['filters']))
     $a_filters = &$config['rss']['filters']['rule'];
 else
     $a_filters = array();
+
+$History = new History($config['rss']);
+$History->read();
 
 $options = array(
     'parseAttributes' => TRUE,
@@ -48,38 +57,32 @@ $Unserializer = &new XML_Unserializer($options);
 foreach ($a_feeds as &$feed) {
     if(!isset($feed['enabled'])) continue;
 
-    rss_log("Getting feed {$feed['name']}");
+    rss_log("Getting feed {$feed['name']}", VERBOSE_EXTRA);
     
     $status = $Unserializer->unserialize($feed['_url'], true);
     if (PEAR::isError($status)) die($status->getMessage());
     
     $data = $Unserializer->getUnserializedData();
     if ($data == false) {
-        rss_log("Unable to unserialize {$feed['name']}");
+        rss_log("Unable to unserialize {$feed['name']}", VERBOSE_EXTRA);
         continue;
     }
     
-    if (!is_array($feed['history'])) $feed['history'] = array('rule' => array());
-    
     if (!isset($data['channel']['item'])) {
-        rss_log("No item data");
+        rss_log("No item data", VERBOSE_EXTRA);
         continue;
     }
 
     foreach ($data['channel']['item'] as $item) {
         if (!is_array($item)) {
-            rss_log("Invalid feed data for {$feed['name']}");
+            rss_log("Invalid feed data for {$feed['name']}", VERBOSE_EXTRA);
             continue;
         }
         
-        foreach ($feed['history']['rule'] as $entry) {
-            if (get_guid($item) == $entry['guid']) {
-                continue 2;
-            }
-        }
-        
+        if ($History->find($feed['uuid'], get_guid($item))) { rss_log("{$item['title']} found", VERBOSE_EXTRA); continue; }
+
         if ($feed['subscribe']) {
-            if (add_torrent(get_download($item), $feed['directory'])) $item['downloaded'] = true;
+            if (add_torrent(get_download($item), $feed['directory']) == 0) $item['downloaded'] = true;
         } else {
             foreach ($a_filters as &$filter) {
                 if (!isset($filter['enabled'])) continue;
@@ -87,7 +90,7 @@ foreach ($a_feeds as &$feed) {
                 
                 if (preg_match('/'.$filter['filter'].'/i', $item['title']))
                 {
-                    rss_log("{$item['title']} matches {$filter['filter']}");
+                    rss_log("{$item['title']} matches {$filter['filter']}", VERBOSE_EXTRA);
                     $item['filter'] = $filter['uuid'];
 
                     if (isset($filter['smart'])) {
@@ -97,7 +100,7 @@ foreach ($a_feeds as &$feed) {
                         $id = implode('x', array_slice($match, 3));
                         if (is_array($filter['episodes']) && is_array($filter['episodes']['rule'])) {
                             if (in_array($id, $filter['episodes']['rule'])) {
-                                rss_log("Already have episode $id");
+                                rss_log("Already have episode $id", VERBOSE_EXTRA);
                                 add_item(&$feed, $item);
                                 continue 2;
                             }
@@ -106,13 +109,13 @@ foreach ($a_feeds as &$feed) {
                         else
                             $filter['episodes'] = array('rule' => array($id));
                             
-                        rss_log("New epidose $id");
+                        rss_log("New epidose $id", VERBOSE_EXTRA);
                     }
                     
                     if (add_torrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory']) == 0) {
                         $item['downloaded'] = true;
                     }
-                    else rss_log("Unable to add {$item['title']} from " . get_download($item));
+                    else rss_log("Unable to add {$item['title']} from " . get_download($item), VERBOSE_ERROR);
                 }
             }
         }
@@ -121,5 +124,7 @@ foreach ($a_feeds as &$feed) {
     }   
 }
 
-rss_log("Saving data");
+rss_log('Saving data', VERBOSE_EXTRA);
+
+$History->write();
 write_config();
