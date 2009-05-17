@@ -4,8 +4,6 @@ require_once('config.inc');
 class History {
   var $_history = array();
   var $_config = null;
-  var $_dir = null;
-  var $useConfig = false;
   
   function History(&$settings) {
     global $config;
@@ -38,6 +36,8 @@ class History {
       if (isset($feed['history'])) {    
         foreach ($feed['history']['rule'] as $entry) {
           if ($this->find($feed['uuid'], $entry) === false) {
+            $entry['pubDate'] = $entry['pubdate'];
+            unset($entry['pubdate']);
             $this->add($feed['uuid'], $entry);
           }
         }
