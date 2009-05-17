@@ -37,6 +37,10 @@ class History {
         foreach ($feed['history']['rule'] as $entry) {
           if ($this->find($feed['uuid'], $entry) === false) {
             $entry['pubDate'] = $entry['pubdate'];
+            
+            if (isset($entry['downloaded'])) $entry['downloaded'] = true;
+            else $entry['downloaded'] = false;
+            
             unset($entry['pubdate']);
             $this->add($feed['uuid'], $entry);
           }
