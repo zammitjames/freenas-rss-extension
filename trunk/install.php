@@ -68,12 +68,11 @@ if (!is_array($config['rss'])) {
     echo 'Initializing configuration', "\n";
     $config['rss'] = array(
         'feeds' => array('rule' => array()),
-        'filters' => array('rule' => array()),
-        'path' => $INSTALLPATH
+        'filters' => array('rule' => array())
     );
-} else if (!isset($config['rss']['path'])) {
-  $config['rss']['path'] = $INSTALLPATH;
 }
+
+$config['rss']['path'] = $INSTALLPATH;
 
 echo 'Saving configuration changes', "\n";
 write_config();
