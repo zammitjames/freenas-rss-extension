@@ -72,6 +72,9 @@ foreach ($a_feeds as &$feed) {
         rss_log("No item data", VERBOSE_EXTRA);
         continue;
     }
+    
+    if (!isset($data['channel']['item'][0]))
+      $data['channel']['item'] = array($data['channel']['item']);
 
     foreach ($data['channel']['item'] as $item) {
         if (!is_array($item)) {
