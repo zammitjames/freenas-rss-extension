@@ -73,6 +73,11 @@ class History {
     $this->_history[$feed_id][] = $item;
   }
   
+  function delete($feed_id) {
+    if (isset($this->_history[$feed_id]))
+      unset($this->_history[$feed_id]);
+  }
+  
   function &full($feed_id) {
     return $this->_history[$feed_id];
   }

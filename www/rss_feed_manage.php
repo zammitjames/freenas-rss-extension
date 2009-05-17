@@ -1,6 +1,7 @@
 #!/usr/local/bin/php -f
 <?php
 require('guiconfig.inc');
+require_once('rss_class_history.php');
 
 $pgtitle = array(gettext('Extensions'), gettext('RSS'), gettext('Feeds'));
 
@@ -11,6 +12,11 @@ $a_feeds = &$config['rss']['feeds']['rule'];
 
 if ($_GET['act'] === "del") {
     if ($a_feeds[$_GET['id']]) {
+        $History = new History($config['rss']);
+        $History->read();
+        $History->delete($_GET['id']);
+        $History->write();
+        
         unset($config['rss']['feeds']['rule'][$_GET['id']]);
         write_config();
     }
