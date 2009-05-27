@@ -84,7 +84,8 @@ foreach ($a_feeds as &$feed) {
         
         if ($History->find($feed['uuid'], get_guid($item))) { rss_log("{$item['title']} found", VERBOSE_EXTRA); continue; }
 
-        if ($feed['subscribe']) {
+        if (isset($feed['subscribe'])) {
+          print ('subscribed. ' . $item['title']);
             if (add_torrent(get_download($item), $feed['directory']) == 0) $item['downloaded'] = true;
         } else {
             foreach ($a_filters as &$filter) {
