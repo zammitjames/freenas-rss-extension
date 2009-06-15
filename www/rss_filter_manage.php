@@ -12,7 +12,7 @@ $a_filters = &$config['rss']['filters']['rule'];
 $a_feeds = &$config['rss']['feeds']['rule'];
 
 if ($_GET['act'] === "del") {
-    if ($a_feeds[$_GET['id']]) {
+    if ($a_filters[$_GET['id']]) {
         unset($config['rss']['filters']['rule'][$_GET['id']]);
         write_config();
     }
