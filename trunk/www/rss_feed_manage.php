@@ -1,7 +1,7 @@
 #!/usr/local/bin/php -f
 <?php
 require('guiconfig.inc');
-require_once('rss_class_history.php');
+require_once('ext/RSS/rss_class_history.php');
 
 $pgtitle = array(gettext('Extensions'), gettext('RSS'), gettext('Feeds'));
 
