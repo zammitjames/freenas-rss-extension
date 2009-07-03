@@ -30,12 +30,19 @@ function rss_log($message, $err_level) {
     }
 }
 
-function add_torrent($torrent, $folder = '') {
+function add_torrent($torrent, $folder, $cookie='') {
     global $config, $TRANSMISSION;
     
     $file = '/tmp/' . md5($torrent) . '.torrent';
     
-    if (copy($torrent, $file) !== TRUE) {
+    $cntx = stream_context_create(array(
+      'http' => array(
+        'header' => "Cookie: $cookie\r\n" .
+          "User-Agent: FreeNAS RSS Extension/1.0 (FreeNAS; FreeBSD)\r\n",
+      )
+    ));
+    
+    if (copy($torrent, $file, $cntx) !== TRUE) {
         $retVal = -1;
     }
     else { 

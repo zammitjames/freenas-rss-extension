@@ -20,6 +20,7 @@ if (isset($id) && $a_feed[$id]) {
     $pconfig['subscribe'] = $a_feed[$id]['subscribe'];
     $pconfig['enabled'] = $a_feed[$id]['enabled'];
     $pconfig['directory'] = $a_feed[$id]['directory'];
+    $pconfig['cookie'] = $a_feed[$id]['cookie'];
 } else {
     $pconfig['uuid'] = uuid();
     $pconfig['name'] = '';
@@ -28,6 +29,7 @@ if (isset($id) && $a_feed[$id]) {
     $pconfig['enabled'] = true;
     $pconfig['updated'] = 'Never';
     $pconfig['directory'] = '';
+    $pconfig['cookie'] = '';
 }
 
 if ($_POST) {
@@ -60,6 +62,7 @@ if ($_POST) {
         $feed['enabled'] = $_POST['enabled'] ? true : false;
         $feed['subscribe'] = $_POST['subscribe'] ? true : false;
         $feed['directory'] = $_POST['directory'];
+        $feed['cookie'] = $_POST['cookie'];
 
         if (isset($id) && $a_feed[$id]) {
             $a_feed[$id] = $feed;
@@ -94,6 +97,7 @@ if ($_POST) {
                 <table width="100%" border="0" cellpadding="6" cellspacing="0">
                     <?php html_inputbox("name", gettext("Name"), $pconfig['name'], gettext("You may enter a name here for your reference."), true, 40);?>
                     <?php html_inputbox("_url", gettext("URL"), $pconfig['_url'], gettext("Enter the URL of the feed."), true, 40); ?>
+                    <?php html_inputbox("cookie", gettext("Cookie"), $pconfig['cookie'], gettext("Any required cookies, use the form of key=value;key=value;...")); ?>
                     <?php html_filechooser("directory", gettext("Download directory"), $pconfig['directory'], gettext("Where to save downloaded data."), $g['media_path'], false, 60); ?>
                     <tr>
                         <td width="22%" valign="top" class="vncell"><?=gettext("Subscribe");?></td>

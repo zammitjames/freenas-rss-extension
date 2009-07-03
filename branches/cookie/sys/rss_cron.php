@@ -85,7 +85,7 @@ foreach ($a_feeds as &$feed) {
         if ($History->find($feed['uuid'], get_guid($item))) { rss_log("{$item['title']} found", VERBOSE_EXTRA); continue; }
 
         if (isset($feed['subscribe'])) {
-            if (add_torrent(get_download($item), $feed['directory']) == 0) $item['downloaded'] = true;
+            if (add_torrent(get_download($item), $feed['directory'], $feed['cookie']) == 0) $item['downloaded'] = true;
         } else {
             foreach ($a_filters as &$filter) {
                 if (!isset($filter['enabled'])) continue;
@@ -115,7 +115,7 @@ foreach ($a_feeds as &$feed) {
                         rss_log("New epidose $id", VERBOSE_EXTRA);
                     }
                     
-                    if (add_torrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory']) == 0) {
+                    if (add_torrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory'], $feed['cookie']) == 0) {
                         $item['downloaded'] = true;
                     }
                     else rss_log("Unable to add {$item['title']} from " . get_download($item), VERBOSE_ERROR);

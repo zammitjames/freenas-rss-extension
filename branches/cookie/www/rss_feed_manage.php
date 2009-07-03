@@ -42,7 +42,7 @@ include("fbegin.inc");
                     <tr>
                         <td width="10%" class="listhdrr"><?=gettext("Name"); ?></td>
                         <td width="65%" class="listhdrr"><?=gettext("URL"); ?></td>
-                        <td width="10%" class="listhdrr"><?=gettext("Last Checked"); ?></td>
+                        <? /* td width="10%" class="listhdrr"><?=gettext("Last Checked"); ?></td */ ?>
                         <td width="5%" class="listhdrr"><?=gettext("Enabled"); ?></td>
                         <td width="10%" class="list"></td>
                     </tr>
@@ -52,7 +52,7 @@ include("fbegin.inc");
                     <tr>
                         <td class="<?=$enable?"listlr":"listlrd";?>"><?=htmlspecialchars($feed['name']);?></td>
                         <td class="<?=$enable?"listrc":"listrcd";?>"><?=htmlspecialchars($feed['_url']);?></td>
-                        <td class="<?=$enable?"listrc":"listrcd";?>"><?=htmlspecialchars($feed['updated']);?>&nbsp;</td>
+                        <? /* td class="<?=$enable?"listrc":"listrcd";?>"><?=htmlspecialchars($feed['updated']);?>&nbsp;</td */ ?>
                         <td class="<?=$enable?"listrc":"listrcd";?>">
                             <?php if ($enable):?>
                             <img src="status_enabled.png" border="0">
