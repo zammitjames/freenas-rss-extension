@@ -41,9 +41,12 @@ function add_torrent($torrent, $folder, $cookie='') {
           "User-Agent: FreeNAS RSS Extension/1.0 (FreeNAS; FreeBSD)\r\n",
       )
     ));
-    
-    if (copy($torrent, $file, $cntx) !== TRUE) {
+
+    $torrent_data = file_get_contents($torrent, false, $cntx);
+    if ($torrent_data === false) {
         $retVal = -1;
+    } else if (file_put_contents($file, $torrent_data) === false) {
+        $retVal = -3;
     }
     else { 
         $start = "transmission-remote {$TRANSMISSION['port']} --auth={$TRANSMISSION['user']}:{$TRANSMISSION['pass']}";
