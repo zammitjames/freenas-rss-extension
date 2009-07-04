@@ -30,19 +30,26 @@ function rss_log($message, $err_level) {
     }
 }
 
+function rss_download($url, $cookie) {
+  $cntx = stream_context_create(array(
+    'http' => array(
+      'header' => "Cookie: $cookie\r\n" .
+        "User-Agent: FreeNAS RSS Extension/1.0 (FreeNAS; FreeBSD)\r\n",
+    )
+  ));
+
+  $data = file_get_contents($url, false, $cntx);
+  $cntx = null;
+  return $data;
+}
+
 function add_torrent($torrent, $folder, $cookie='') {
     global $config, $TRANSMISSION;
     
     $file = '/tmp/' . md5($torrent) . '.torrent';
     
-    $cntx = stream_context_create(array(
-      'http' => array(
-        'header' => "Cookie: $cookie\r\n" .
-          "User-Agent: FreeNAS RSS Extension/1.0 (FreeNAS; FreeBSD)\r\n",
-      )
-    ));
-
-    $torrent_data = file_get_contents($torrent, false, $cntx);
+    $torrent_data = rss_download($torrent, $cookie);
+    
     if ($torrent_data === false) {
         $retVal = -1;
     } else if (file_put_contents($file, $torrent_data) === false) {

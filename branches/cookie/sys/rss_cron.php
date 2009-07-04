@@ -59,8 +59,17 @@ foreach ($a_feeds as &$feed) {
 
     rss_log("Getting feed {$feed['name']}", VERBOSE_EXTRA);
     
-    $status = $Unserializer->unserialize($feed['_url'], true);
-    if (PEAR::isError($status)) die($status->getMessage());
+    $xml = rss_download($feed['_url'], $feed['cookie']);
+    if ($xml === false) {
+      rss_log("Unable to download {$feed['name']} feed", VERBOSE_ERROR);
+      continue;
+    }
+    
+    $status = $Unserializer->unserialize($xml, false);
+    if (PEAR::isError($status)) {
+      rss_log("Error unserializing {$feed['name']} feed: " . $status->getMessage(), VERBOSE_ERROR);
+      continue;
+    }
     
     $data = $Unserializer->getUnserializedData();
     if ($data == false) {
