@@ -22,7 +22,8 @@ function rss_log($message, $err_level) {
         if (isset($config['rss']['debuglog'])) {
             $fp = fopen("{$config['rss']['path']}/rss.log", 'a');
             if (!$fp) return;
-            fwrite($fp, "$message\r\n");
+            $log = sprintf("[%s] %s\r\n", date('d M Y H:i:s'), $message);
+            fwrite($fp, $log);
             fclose($fp);
         }
         else
