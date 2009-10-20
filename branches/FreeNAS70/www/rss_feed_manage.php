@@ -9,7 +9,7 @@ $pgtitle = array(gettext('Extensions'), gettext('RSS'), gettext('Feeds'));
 if (!is_array($config['rss']['feeds'])) $config['rss']['feeds'] = array('rule'=>array());
 array_sort_key($config['rss']['feeds']['rule'], "name");
 
-$a_feeds = &$config['rss']['feeds']['rule'];
+$a_feeds = array_values($config['rss']['feeds']['rule']);
 
 if ($_GET['act'] === "del") {
     if ($a_feeds[$_GET['id']]) {
@@ -18,7 +18,8 @@ if ($_GET['act'] === "del") {
         $History->delete($_GET['id']);
         $History->write();
         
-        unset($config['rss']['feeds']['rule'][$_GET['id']]);
+        unset($a_feeds[$_GET['id']]);
+        $config['rss']['feeds']['rule'] = $a_feeds;
         write_config();
     }
 }

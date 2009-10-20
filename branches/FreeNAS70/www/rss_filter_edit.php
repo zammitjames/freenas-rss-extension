@@ -12,8 +12,8 @@ $pgtitle = array(gettext('Extensions'), gettext("RSS"),gettext("Filter"),isset($
 if (!is_array($config['rss']['filters'])) $config['rss']['filters'] = array('rule'=>array());
 array_sort_key($config['rss']['filters']['rule'], "name");
 
-$a_filter = &$config['rss']['filters']['rule'];
-$a_feed = &$config['rss']['feeds']['rule'];
+$a_feed = array_values($config['rss']['feeds']['rule']);
+$a_filter = array_values($config['rss']['filters']['rule']);
 
 if (isset($id) && $a_filter[$id]) {
     $pconfig['uuid'] = $a_filter[$id]['uuid'];
@@ -72,6 +72,7 @@ if ($_POST) {
             $a_filter[] = $filter;
         }
 
+        $config['rss']['filters']['rule'] = $a_filter;
         write_config();
 
         header("Location: extension_rss_filter_manage.php");

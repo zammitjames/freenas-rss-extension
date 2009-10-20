@@ -12,7 +12,7 @@ $pgtitle = array(gettext('Extensions'), gettext("RSS"),gettext("Feed"),isset($id
 if (!is_array($config['rss']['feeds'])) $config['rss']['feeds'] = array('rule'=>array());
 array_sort_key($config['rss']['feeds']['rule'], "name");
 
-$a_feed = &$config['rss']['feeds']['rule'];
+$a_feed = array_values($config['rss']['feeds']['rule']);
 
 if (isset($id) && $a_feed[$id]) {
     $pconfig['uuid'] = $a_feed[$id]['uuid'];
@@ -71,6 +71,7 @@ if ($_POST) {
             $a_feed[] = $feed;
         }
 
+        $config['rss']['feeds']['rule'] = $a_feed;
         write_config();
 
         header("Location: extension_rss_feed_manage.php");

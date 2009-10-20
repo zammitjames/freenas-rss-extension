@@ -9,12 +9,13 @@ $pgtitle = array(gettext('Extensions'), gettext('RSS'), gettext('Filters'));
 if (!is_array($config['rss']['filters'])) $config['rss']['filters'] = array('rule'=>array());
 array_sort_key($config['rss']['filters']['rule'], "name");
 
-$a_filters = &$config['rss']['filters']['rule'];
-$a_feeds = &$config['rss']['feeds']['rule'];
+$a_feeds = array_values($config['rss']['feeds']['rule']);
+$a_filters = array_values($config['rss']['filters']['rule']);
 
 if ($_GET['act'] === "del") {
     if ($a_filters[$_GET['id']]) {
-        unset($config['rss']['filters']['rule'][$_GET['id']]);
+        unset($a_filters[$_GET['id']]);
+        $config['rss']['filters']['rule'] = $a_filters;
         write_config();
     }
 }
