@@ -72,6 +72,8 @@ if (!is_array($config['rss'])) {
     );
 }
 
+for ($config['rss']['feeds']['rule'] as &$feed) if (!isset($feed['cookie'])) $feed['cookie'] = '';
+
 $config['rss']['path'] = $INSTALLPATH;
 
 echo 'Saving configuration changes', "\n";

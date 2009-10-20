@@ -32,7 +32,7 @@ if (isset($_POST['act']) && $_POST['act'] === "down") {
         if(empty($directory))
             $directory = $a_feeds[$_POST['id']]['directory'];
         
-        if(add_torrent($item['link'], $directory) == 0) {
+        if(add_torrent($item['link'], $directory, $a_feeds[$_POST['id']]['cookie']) == 0) {
             $savemsg = "Successfully downloaded ";
             $item['downloaded'] = true;
             $History->write();

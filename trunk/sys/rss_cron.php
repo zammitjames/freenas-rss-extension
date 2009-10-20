@@ -59,8 +59,17 @@ foreach ($a_feeds as &$feed) {
 
     rss_log("Getting feed {$feed['name']}", VERBOSE_EXTRA);
     
-    $status = $Unserializer->unserialize($feed['_url'], true);
-    if (PEAR::isError($status)) die($status->getMessage());
+    $xml = rss_download($feed['_url'], $feed['cookie']);
+    if ($xml === false) {
+      rss_log("Unable to download {$feed['name']} feed", VERBOSE_ERROR);
+      continue;
+    }
+    
+    $status = $Unserializer->unserialize($xml, false);
+    if (PEAR::isError($status)) {
+      rss_log("Error unserializing {$feed['name']} feed: " . $status->getMessage(), VERBOSE_ERROR);
+      continue;
+    }
     
     $data = $Unserializer->getUnserializedData();
     if ($data == false) {
@@ -85,7 +94,7 @@ foreach ($a_feeds as &$feed) {
         if ($History->find($feed['uuid'], get_guid($item))) { rss_log("{$item['title']} found", VERBOSE_EXTRA); continue; }
 
         if (isset($feed['subscribe'])) {
-            if (add_torrent(get_download($item), $feed['directory']) == 0) $item['downloaded'] = true;
+            if (add_torrent(get_download($item), $feed['directory'], $feed['cookie']) == 0) $item['downloaded'] = true;
         } else {
             foreach ($a_filters as &$filter) {
                 if (!isset($filter['enabled'])) continue;
@@ -115,7 +124,7 @@ foreach ($a_feeds as &$feed) {
                         rss_log("New epidose $id", VERBOSE_EXTRA);
                     }
                     
-                    if (add_torrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory']) == 0) {
+                    if (add_torrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory'], $feed['cookie']) == 0) {
                         $item['downloaded'] = true;
                     }
                     else rss_log("Unable to add {$item['title']} from " . get_download($item), VERBOSE_ERROR);
