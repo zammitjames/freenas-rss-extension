@@ -1,4 +1,4 @@
-#!/usr/local/bin/php
+#! /usr/local/bin/php -f
 <?php
 require_once('ext/RSS/rss_class_history.php');
 require_once('ext/RSS/rss_functions.inc');
