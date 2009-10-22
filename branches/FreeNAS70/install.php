@@ -36,9 +36,12 @@ echo 'Looking for cron job...';
 $found = false;
 foreach ($config['cron']['job'] as &$job) {
     if (preg_match('/(?:^|\s)RSS(?:$|\s)/i', $job['desc'])) {
-        if (preg_match('#/usr/local/bin/php#', $job['command']))
-            $job['command'] = $INSTALLPATH . 'sys/rss_cron.php';
-        echo 'found', "\n";
+        if (preg_match('/.*\.php$/', $job['command'])) {
+            $job['command'] = $INSTALLPATH . 'sys/cron.sh';
+            echo "updated\n";
+        } else {
+				    echo "found\n";
+        }
         $found = true;
         break;
     }
@@ -61,7 +64,7 @@ if (!$found) {
     $cronjob['all_months'] = '1';
     $cronjob['all_weekdays'] = '1';
     $cronjob['who'] = 'root';
-    $cronjob['command'] = $INSTALLPATH . 'sys/rss_cron.php';
+    $cronjob['command'] = $INSTALLPATH . 'sys/cron.sh';
 
     $config['cron']['job'][] = $cronjob;
 }
