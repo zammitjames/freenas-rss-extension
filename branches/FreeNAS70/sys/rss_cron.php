@@ -54,6 +54,7 @@ $options = array(
 );
 $Unserializer = &new XML_Unserializer($options);
 
+$modified = false;
 foreach ($a_feeds as &$feed) {
     if(!isset($feed['enabled'])) continue;
 
@@ -121,6 +122,7 @@ foreach ($a_feeds as &$feed) {
                         else
                             $filter['episodes'] = array('rule' => array($id));
                             
+												$modified = true;
                         rss_log("New epidose $id", VERBOSE_EXTRA);
                     }
                     
@@ -136,7 +138,11 @@ foreach ($a_feeds as &$feed) {
     }   
 }
 
-rss_log('Saving data', VERBOSE_EXTRA);
+if ($modified) {
+  rss_log('Saving data', VERBOSE_EXTRA);
+	
+  $History->write();
+  write_config();
+}
 
-$History->write();
-write_config();
+rss_log('Completed job', VERBOSE_SUCCESS);
