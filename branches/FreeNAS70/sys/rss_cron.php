@@ -20,7 +20,7 @@ function get_guid($item) {
 }
 
 function add_item($feed, $item) {
-    global $History;
+    global $History, $modified;
     
     $History->add($feed['uuid'], array(
         'title' => $item['title'],
@@ -31,6 +31,8 @@ function add_item($feed, $item) {
         'downloaded' => (isset($item['downloaded']) ? true : false),
         'filter' => (isset($item['filter']) ? $item['filter'] : false)
     ));
+		
+		$modified['history'] = true;
 }
 
 // We don't have any feeds, just exit.  Filters are not required.
@@ -54,7 +56,7 @@ $options = array(
 );
 $Unserializer = &new XML_Unserializer($options);
 
-$modified = false;
+$modified = array('filters' => false, 'history'=> false);
 foreach ($a_feeds as &$feed) {
     if(!isset($feed['enabled'])) continue;
 
@@ -122,7 +124,7 @@ foreach ($a_feeds as &$feed) {
                         else
                             $filter['episodes'] = array('rule' => array($id));
                             
-												$modified = true;
+												$modified['filters'] = true;
                         rss_log("New epidose $id", VERBOSE_EXTRA);
                     }
                     
@@ -138,11 +140,8 @@ foreach ($a_feeds as &$feed) {
     }   
 }
 
-if ($modified) {
-  rss_log('Saving data', VERBOSE_EXTRA);
-	
-  $History->write();
-  write_config();
-}
+rss_log('Saving data', VERBOSE_EXTRA);
+if ($modified['history']) $History->write();
+if ($modified['filters']) write_config();
 
 rss_log('Completed job', VERBOSE_SUCCESS);
