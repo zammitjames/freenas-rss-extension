@@ -112,7 +112,7 @@ foreach ($a_feeds as &$feed) {
                         if(!preg_match('/\W(?:S(\d+)E(\d+)|(\d+)x(\d+)(?:\.(\d+))?)\W/', $item['title'], $match))
                             continue;
                         
-                        $id = implode('x', array_diff($match, array("")));
+                        $id = implode('x', array_slice(array_diff($match, array("")), 1));
                         if (is_array($filter['episodes']) && is_array($filter['episodes']['rule'])) {
                             if (in_array($id, $filter['episodes']['rule'])) {
                                 rss_log("Already have episode $id", VERBOSE_EXTRA);
