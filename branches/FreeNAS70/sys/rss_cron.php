@@ -109,7 +109,7 @@ foreach ($a_feeds as &$feed) {
                     $item['filter'] = $filter['uuid'];
 
                     if (isset($filter['smart'])) {
-                        if(!preg_match('/\W(?:S(\d+)E(\d+)|(\d+)x(\d+)(?:\.(\d+))?)\W/', $item['title'], $match))
+                        if(!preg_match('/\W(?:S0*(\d+)E0*(\d+)|0*(\d+)x0*(\d+)(?:\.0*(\d+))?)\W/', $item['title'], $match))
                             continue;
                         
                         $id = implode('x', array_slice(array_diff($match, array("")), 1));

@@ -123,7 +123,7 @@ if ($_POST) {
                     <input name="id" type="hidden" value="<?=$id;?>">
                     <?php endif; ?>
                 </div>
-								<?php include("formend.inc");?>
+                <?php include("formend.inc");?>
             </form>
         </td>
     </tr>

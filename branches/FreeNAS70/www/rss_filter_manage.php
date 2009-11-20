@@ -38,7 +38,7 @@ include("fbegin.inc");
                 <?php if ($savemsg) print_info_box($savemsg); ?>
                 <table width="100%" border="0" cellpadding="0" cellspacing="0">
                     <tr>
-                        <td width="10%" class="listhdrr"><?=gettext("Name"); ?></td>
+                        <td width="10%" class="listhdrlr"><?=gettext("Name"); ?></td>
                         <td width="65%" class="listhdrr"><?=gettext("Filter"); ?></td>
                         <td width="10%" class="listhdrr"><?=gettext("Feed"); ?></td>
                         <td width="5%" class="listhdrr"><?=gettext("Enabled"); ?></td>
@@ -67,11 +67,11 @@ include("fbegin.inc");
                     </tr>
                     <?php $i++; endforeach;?>
                     <tr>
-                        <td class="list" colspan="6"></td>
+                        <td class="list" colspan="4"></td>
                         <td class="list"> <a href="extension_rss_filter_edit.php"><img src="plus.gif" title="<?=gettext("Add feed"); ?>" border="0"></a></td>
                     </tr>
                 </table>
-								<?php include("formend.inc");?>
+                <?php include("formend.inc");?>
             </form>
         </td>
     </tr>

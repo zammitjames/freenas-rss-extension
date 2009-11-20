@@ -73,7 +73,7 @@ include("fbegin.inc");
                 <option value='<?=$i;?>' <?php if (isset($id) && $id == $i):?>selected='selected'<?php endif; ?>><?=$feed['name'];?></option>
                 <? $i++; endforeach; ?>
             </select>
-						<?php include("formend.inc");?>
+            <?php include("formend.inc");?>
         </form>
         </td>
     </tr>
@@ -85,7 +85,7 @@ include("fbegin.inc");
                 <?php if (isset($savemsg)) print_info_box($savemsg); ?>
                 <table width="100%" border="0" cellpadding="0" cellspacing="0">
                     <tr>
-                        <td width="75%" class="listhdrr"><?=gettext("Title"); ?></td>
+                        <td width="75%" class="listhdrlr"><?=gettext("Title"); ?></td>
                         <td width="20%" class="listhdrr"><?=gettext("Date"); ?></td>
                         <td width="5%" class="listhdrr"><?=gettext("Downloaded"); ?></td>
                         <!-- td width="10%" class="list"></td -->
@@ -98,7 +98,7 @@ include("fbegin.inc");
                             <?php endif; ?>
                             <?=htmlspecialchars($entry['title']);?>
                             <?php if ($entry['filter'] && get_by_uuid($a_filters, $entry['filter']) != null): ?> <img src="/ext/RSS/lightning.png" alt="filtered" title="Matched filter: <?=get_by_uuid($a_filters, $entry['filter'], 'name'); ?>" /><?php endif; ?></td>
-                        <td class="listrc"><?=htmlspecialchars($entry['pubDate']);?></td>
+                        <td class="listrc"><?=htmlspecialchars(date(DATE_RSS, strtotime($entry['pubDate'])));?></td>
                         <td class="listrc">
                             <?php if ($entry['downloaded']):?>
                             <img src="status_enabled.png" border="0">
@@ -124,7 +124,7 @@ include("fbegin.inc");
                     <?php endif; ?>
                     <?php $i++; endforeach;?>
                 </table>
-								<?php include("formend.inc");?>
+                <?php include("formend.inc");?>
             </form>
             <?php
             else:
