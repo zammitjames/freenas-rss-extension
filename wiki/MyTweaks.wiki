@@ -23,3 +23,63 @@ By default (for whatever reason) FreeNAS disables the use of blocklists in trans
 
 ||Variable||Value||Comment||
 ||transmission_noblocklist||NO||Stop turning off my blocklist!||
+||tranmission_blocklist||YES||Now leave it on please...||
+
+== watcher.sh ==
+{{{
+#! /bin/bash
+
+if [ -z "$(pgrep transmission-daemon)" ]
+then
+        rm /home/transmission/*.core
+        /etc/rc.d/transmission start
+fi
+}}}
+
+Transmission crashes on me a lot so I use this to clean up the core file and restart transmission.  I have it set to run every 5 minutes in a cron job.
+
+*Note* I am not running 0.70 at this time, this may no longer be necessary.
+
+== blocklist_update ==
+{{{
+#! /bin/bash
+
+###
+# Select the blacklists you would like to download & use, all available lists
+# (except exemptions) are listed below
+#LISTS="ads-trackers-and-bad-pr0n bogon dshield edu fornonlancomputers hijacked iana-multicast iana-private iana-reserved level1 level2 Microsoft proxy spider spyware"
+#
+LISTS="bogon dshield hijacked iana-multicast iana-private iana-reserved level1 level2 Microsoft"
+
+###
+# YOU SHOULD NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING
+#
+url="http://www.bluetack.co.uk/config/"
+config_dir=`/usr/local/bin/xml sel -t -m "//bittorrent" -v configdir /cf/conf/config.xml | /usr/local/bin/xml unesc`
+updated=0
+
+if [ "$config_dir" == "" ]; then
+ logger -t blocklist_update -- "Config directory not set"
+ exit 1
+fi
+
+for list in $LISTS; do
+  file="$config_dir/blocklists/$list.gz"
+  lsize=`stat -qf %z "$file" || echo 0`
+  rsize=`fetch -apsw 5 $url$list.gz || exit 1`
+  if [ "$lsize" -ne "$rsize" ]; then
+    logger -t blocklist_update -- "Updated $list"
+    fetch -qapw 5 -o "$file" $url$list.gz
+    gunzip -kqf "$file"
+    updated=1
+  fi
+done
+
+if [ "$updated" -eq "1" ]; then
+  /etc/rc.d/transmission restart &> /dev/null
+else
+  logger -t blocklist_updater -- "All lists up-to-date"
+fi
+}}}
+
+Updates all lists used by Bluetacks nipfilter.dat instead of just getting the level1 list that tranmissionbt mirrors.  Could easily be expanded to accept multiple lists from multiple locations, but this meets my needs for now.  I have it set to run once a week in a cron job.
