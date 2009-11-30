@@ -77,12 +77,22 @@ function add_torrent($torrent, $folder, $cookie='') {
     
     if ($retVal == 0) rss_log("Downloaded $torrent", VERBOSE_SUCCESS);
     else if ($retVal == -1) rss_log("Unable to download $torrent", VERBOSE_ERROR);
-    else if ($retVal == -2) rss_log("Transmission error on $torrent: $ret", VERBOSE_ERROR);
+    else if ($retVal == -2)
+        // Check for a duplicate torrent response and retcon it to not be an error ;)
+        // Thanks to dar.quonb
+        if ($retVal == "-2 duplicate torrent") {
+            $retVal = "0";
+            rss_log("Downloaded $torrent is already added", VERBOSE_SUCCESS);
+        }
+        else
+            rss_log("Transmission error on $torrent: $retVal", VERBOSE_ERROR);
     return $retVal;        
 }
 
 function get_by_uuid($array, $uuid, $field = null) {
   $i = 0;
+  if (!is_array($array)) return null;
+	
   foreach ($array as $item) {
     if ($item['uuid'] == $uuid) {
       if ($field == null) return $item;

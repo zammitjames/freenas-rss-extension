@@ -1,6 +1,7 @@
 #!/usr/local/bin/php
 <?php
-require("guiconfig.inc");
+require_once("auth.inc");
+require_once("guiconfig.inc");
 
 $id = $_GET['id'];
 if (isset($_POST['id']))
@@ -11,8 +12,8 @@ $pgtitle = array(gettext('Extensions'), gettext("RSS"),gettext("Filter"),isset($
 if (!is_array($config['rss']['filters'])) $config['rss']['filters'] = array('rule'=>array());
 array_sort_key($config['rss']['filters']['rule'], "name");
 
-$a_filter = &$config['rss']['filters']['rule'];
-$a_feed = &$config['rss']['feeds']['rule'];
+$a_feed = array_values($config['rss']['feeds']['rule']);
+$a_filter = array_values($config['rss']['filters']['rule']);
 
 if (isset($id) && $a_filter[$id]) {
     $pconfig['uuid'] = $a_filter[$id]['uuid'];
@@ -71,6 +72,7 @@ if ($_POST) {
             $a_filter[] = $filter;
         }
 
+        $config['rss']['filters']['rule'] = $a_filter;
         write_config();
 
         header("Location: extension_rss_filter_manage.php");
@@ -133,6 +135,7 @@ if ($_POST) {
                     <input name="id" type="hidden" value="<?=$id;?>">
                     <?php endif; ?>
                 </div>
+                <?php include("formend.inc");?>
             </form>
         </td>
     </tr>

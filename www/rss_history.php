@@ -1,5 +1,6 @@
 #!/usr/local/bin/php -f
 <?php
+require_once("auth.inc");
 require_once('guiconfig.inc');
 require_once('ext/RSS/rss_functions.inc');
 require_once('ext/RSS/rss_class_history.php');
@@ -12,8 +13,8 @@ if (!is_array($config['rss']['filters'])) $config['rss']['filters'] = array('rul
 array_sort_key($config['rss']['feeds']['rule'], 'name');
 array_sort_key($config['rss']['filters']['rule'], 'name');
 
-$a_feeds = &$config['rss']['feeds']['rule'];
-$a_filters = &$config['rss']['filters']['rule'];
+$a_feeds = array_values($config['rss']['feeds']['rule']);
+$a_filters = array_values($config['rss']['filters']['rule']);
 
 $History = new History($config['rss']);
 $History->read();
@@ -46,7 +47,8 @@ if (isset($_POST['act']) && $_POST['act'] === "down") {
 if (isset($_POST['id'])) {
     $id = $_POST['id'];
     $list = $History->full($a_feeds[$id]['uuid']);
-    usort($list, 'usort_by_pubdate'); // Do this in rss_cron.php
+    if (is_array($list))
+        usort($list, 'usort_by_pubdate'); // Do this in rss_cron.php
 }
 
 include("fbegin.inc");
@@ -71,32 +73,32 @@ include("fbegin.inc");
                 <option value='<?=$i;?>' <?php if (isset($id) && $id == $i):?>selected='selected'<?php endif; ?>><?=$feed['name'];?></option>
                 <? $i++; endforeach; ?>
             </select>
+            <?php include("formend.inc");?>
         </form>
         </td>
     </tr>
 <?php if (isset($id)): ?>
   <tr>
     <td class="tabcont">
+            <?php if (is_array($list)): ?>
             <form action="extension_rss_history.php" method="post">
                 <?php if (isset($savemsg)) print_info_box($savemsg); ?>
                 <table width="100%" border="0" cellpadding="0" cellspacing="0">
                     <tr>
-                        <td width="75%" class="listhdrr"><?=gettext("Title"); ?></td>
+                        <td width="75%" class="listhdrlr"><?=gettext("Title"); ?></td>
                         <td width="20%" class="listhdrr"><?=gettext("Date"); ?></td>
                         <td width="5%" class="listhdrr"><?=gettext("Downloaded"); ?></td>
                         <!-- td width="10%" class="list"></td -->
                     </tr>
-                    <?php
-                        $i = 0; foreach ($list as $entry):
-                    ?>
+                    <?php $i = 0; foreach ($list as $entry): ?>
                     <tr>
                         <td class="listlr">
                             <?php if (isset($entry['description']) && !empty($entry['description'])): ?>
                             <img src="/ext/RSS/bullet_toggle_plus.png" alt="[more]" style='vertical-align: bottom; cursor: pointer' onclick="showdesc('desc<?=$i?>', this);" />
                             <?php endif; ?>
                             <?=htmlspecialchars($entry['title']);?>
-                            <?php if ($entry['filter']): ?> <img src="/ext/RSS/lightning.png" alt="filtered" title="Matched filter: <?=get_by_uuid($a_filters, $entry['filter'], 'name'); ?>" /><?php endif; ?></td>
-                        <td class="listrc"><?=htmlspecialchars($entry['pubDate']);?></td>
+                            <?php if ($entry['filter'] && get_by_uuid($a_filters, $entry['filter']) != null): ?> <img src="/ext/RSS/lightning.png" alt="filtered" title="Matched filter: <?=get_by_uuid($a_filters, $entry['filter'], 'name'); ?>" /><?php endif; ?></td>
+                        <td class="listrc"><?=htmlspecialchars(date(DATE_RSS, strtotime($entry['pubDate'])));?></td>
                         <td class="listrc">
                             <?php if ($entry['downloaded']):?>
                             <img src="status_enabled.png" border="0">
@@ -106,6 +108,7 @@ include("fbegin.inc");
                             <input type="hidden" name="id" value="<?=$id;?>" />
                             <input type="hidden" name="did" value="<?=$entry['guid']; ?>" />
                             <input type="image" src="status_disabled.png" onclick="submit();">
+                            <?php include("formend.inc");?>
                             </form>
                             <?php endif;?>
                         </td>
@@ -121,7 +124,13 @@ include("fbegin.inc");
                     <?php endif; ?>
                     <?php $i++; endforeach;?>
                 </table>
+                <?php include("formend.inc");?>
             </form>
+            <?php
+            else:
+                print_error_box(gettext("There is no histroy, yet!"));
+            endif;
+            ?>
         </td>
     </tr>
 <?php endif; ?>

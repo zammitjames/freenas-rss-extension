@@ -1,4 +1,4 @@
-#!/usr/local/bin/php
+#! /usr/local/bin/php -f
 <?php
 require_once('ext/RSS/rss_class_history.php');
 require_once('ext/RSS/rss_functions.inc');
@@ -20,7 +20,7 @@ function get_guid($item) {
 }
 
 function add_item($feed, $item) {
-    global $History;
+    global $History, $modified;
     
     $History->add($feed['uuid'], array(
         'title' => $item['title'],
@@ -31,6 +31,8 @@ function add_item($feed, $item) {
         'downloaded' => (isset($item['downloaded']) ? true : false),
         'filter' => (isset($item['filter']) ? $item['filter'] : false)
     ));
+		
+		$modified['history'] = true;
 }
 
 // We don't have any feeds, just exit.  Filters are not required.
@@ -54,6 +56,7 @@ $options = array(
 );
 $Unserializer = &new XML_Unserializer($options);
 
+$modified = array('filters' => false, 'history'=> false);
 foreach ($a_feeds as &$feed) {
     if(!isset($feed['enabled'])) continue;
 
@@ -106,10 +109,10 @@ foreach ($a_feeds as &$feed) {
                     $item['filter'] = $filter['uuid'];
 
                     if (isset($filter['smart'])) {
-                        if(!preg_match('/\W(?:S(\d+)E(\d+)|(\d+)x(\d+)(?:\.(\d+))?)\W/', $item['title'], $match))
+                        if(!preg_match('/\W(?:S0*(\d+)E0*(\d+)|0*(\d+)x0*(\d+)(?:\.0*(\d+))?)\W/', $item['title'], $match))
                             continue;
                         
-                        $id = implode('x', array_slice($match, 3));
+                        $id = implode('x', array_slice(array_diff($match, array("")), 1));
                         if (is_array($filter['episodes']) && is_array($filter['episodes']['rule'])) {
                             if (in_array($id, $filter['episodes']['rule'])) {
                                 rss_log("Already have episode $id", VERBOSE_EXTRA);
@@ -121,6 +124,7 @@ foreach ($a_feeds as &$feed) {
                         else
                             $filter['episodes'] = array('rule' => array($id));
                             
+												$modified['filters'] = true;
                         rss_log("New epidose $id", VERBOSE_EXTRA);
                     }
                     
@@ -137,6 +141,7 @@ foreach ($a_feeds as &$feed) {
 }
 
 rss_log('Saving data', VERBOSE_EXTRA);
+if ($modified['history']) $History->write();
+if ($modified['filters']) write_config();
 
-$History->write();
-write_config();
+rss_log('Completed job', VERBOSE_SUCCESS);
