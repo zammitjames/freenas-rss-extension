@@ -40,7 +40,7 @@ Transmission crashes on me a lot so I use this to clean up the core file and res
 
 *Note* I am not running 0.70 at this time, this may no longer be necessary.
 
-== blocklist_update ==
+== blocklist_update.sh ==
 {{{
 #! /bin/bash
 
@@ -59,18 +59,27 @@ config_dir=`/usr/local/bin/xml sel -t -m "//bittorrent" -v configdir /cf/conf/co
 updated=0
 
 if [ "$config_dir" == "" ]; then
- logger -t blocklist_update -- "Config directory not set"
+ logger -t blocklist_update -- Config directory not set
  exit 1
 fi
 
+if [ ! -d "$config_dir/gzblocklists" ]; then
+  mkdir "$config_dir/gzblocklists"
+fi
+
 for list in $LISTS; do
-  file="$config_dir/blocklists/$list.gz"
+  file="$config_dir/gzblocklists/$list.gz"
   lsize=`stat -qf %z "$file" || echo 0`
   rsize=`fetch -apsw 5 $url$list.gz || exit 1`
   if [ "$lsize" -ne "$rsize" ]; then
-    logger -t blocklist_update -- "Updated $list"
+    logger -t blocklist_update -- Updated $list
+
+    # need to download to different folder than $config_dir/blocklists
+    # transmission seems to have trouble at times starting possibly by trying to parse
+    # gz'd files
     fetch -qapw 5 -o "$file" $url$list.gz
     gunzip -kqf "$file"
+    mv "$config_dir/gzblocklists/$list" "$config_dir/blocklists/"
     updated=1
   fi
 done
@@ -78,8 +87,10 @@ done
 if [ "$updated" -eq "1" ]; then
   /etc/rc.d/transmission restart &> /dev/null
 else
-  logger -t blocklist_updater -- "All lists up-to-date"
+  logger -t blocklist_updater -- All lists up-to-date
 fi
 }}}
 
 Updates all lists used by Bluetacks nipfilter.dat instead of just getting the level1 list that tranmissionbt mirrors.  Could easily be expanded to accept multiple lists from multiple locations, but this meets my needs for now.  I have it set to run once a week in a cron job.
+
+Updated to download files to a different directory as the gzip'd files were causing transmission to crash on startup.
