@@ -1,19 +1,21 @@
 #!/usr/local/bin/php -f
 <?php
-require('guiconfig.inc');
-require('ext/RSS/rss_functions.inc');
+require_once("auth.inc");
+require_once('guiconfig.inc');
+require_once('ext/RSS/rss_functions.inc');
 
 $pgtitle = array(gettext('Extensions'), gettext('RSS'), gettext('Filters'));
 
 if (!is_array($config['rss']['filters'])) $config['rss']['filters'] = array('rule'=>array());
 array_sort_key($config['rss']['filters']['rule'], "name");
 
-$a_filters = &$config['rss']['filters']['rule'];
-$a_feeds = &$config['rss']['feeds']['rule'];
+$a_feeds = array_values($config['rss']['feeds']['rule']);
+$a_filters = array_values($config['rss']['filters']['rule']);
 
 if ($_GET['act'] === "del") {
     if ($a_filters[$_GET['id']]) {
-        unset($config['rss']['filters']['rule'][$_GET['id']]);
+        unset($a_filters[$_GET['id']]);
+        $config['rss']['filters']['rule'] = $a_filters;
         write_config();
     }
 }
@@ -36,7 +38,7 @@ include("fbegin.inc");
                 <?php if ($savemsg) print_info_box($savemsg); ?>
                 <table width="100%" border="0" cellpadding="0" cellspacing="0">
                     <tr>
-                        <td width="10%" class="listhdrr"><?=gettext("Name"); ?></td>
+                        <td width="10%" class="listhdrlr"><?=gettext("Name"); ?></td>
                         <td width="65%" class="listhdrr"><?=gettext("Filter"); ?></td>
                         <td width="10%" class="listhdrr"><?=gettext("Feed"); ?></td>
                         <td width="5%" class="listhdrr"><?=gettext("Enabled"); ?></td>
@@ -65,10 +67,11 @@ include("fbegin.inc");
                     </tr>
                     <?php $i++; endforeach;?>
                     <tr>
-                        <td class="list" colspan="6"></td>
+                        <td class="list" colspan="4"></td>
                         <td class="list"> <a href="extension_rss_filter_edit.php"><img src="plus.gif" title="<?=gettext("Add feed"); ?>" border="0"></a></td>
                     </tr>
                 </table>
+                <?php include("formend.inc");?>
             </form>
         </td>
     </tr>
