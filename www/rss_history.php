@@ -128,7 +128,7 @@ include("fbegin.inc");
             </form>
             <?php
             else:
-                print_error_box(gettext("There is no histroy, yet!"));
+                print_error_box(gettext("There is no history, yet!"));
             endif;
             ?>
         </td>
