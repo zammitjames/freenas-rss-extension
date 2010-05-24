@@ -44,7 +44,7 @@ function rss_download($url, $cookie) {
   return $data;
 }
 
-function add_torrent($torrent, $folder, $cookie='') {
+function add_torrent($torrent, $folder, $cookie='', $start_paused=false) {
     global $config, $TRANSMISSION;
     
     $file = '/tmp/' . md5($torrent) . '.torrent';
@@ -62,6 +62,9 @@ function add_torrent($torrent, $folder, $cookie='') {
         
         if (!empty($folder) && is_dir($folder))
             $cmd .= ' --download-dir=' . escapeshellarg($folder);
+            
+        if ($start_paused)
+            $cmd .= ' --stop';
         
         $cmd .= " -a $file 2>&1";
         mwexec2($cmd, $output, $retVal);

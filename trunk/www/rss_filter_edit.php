@@ -24,6 +24,7 @@ if (isset($id) && $a_filter[$id]) {
     $pconfig['feed'] = $a_filter[$id]['feed'];
     $pconfig['smart'] = $a_filter[$id]['smart'];
     $pconfig['episodes'] = $a_filter[$id]['episodes'];
+    $pconfig['start_paused'] = $a_filter[$id]['start_paused'];
 } else {
     $pconfig['uuid'] = uuid();
     $pconfig['name'] = '';
@@ -32,6 +33,7 @@ if (isset($id) && $a_filter[$id]) {
     $pconfig['enabled'] = false;
     $pconfig['feed'] = -1;
     $pconfig['episodes'] = array();
+    $pconfig['start_paused'] = false;
 }
 
 if ($_POST) {
@@ -64,6 +66,7 @@ if ($_POST) {
         $filter['enabled'] = $_POST['enabled'] ? true : false;
         $filter['feed'] = $_POST['feed'];
         $filter['smart'] = $_POST['smart'] ? true : false;
+        $filter['start_paused'] = $_POST['start_paused'] ? true : false;
         $filter['episodes'] = unserialize($_POST['episodes']);
 
         if (isset($id) && $a_filter[$id]) {
@@ -114,6 +117,13 @@ if ($_POST) {
                             <input name="smart" type="checkbox" id="smart" value="yes" <?php if (isset($pconfig['smart'])) echo "checked";?>>
                             <span class="vexpl"><?=gettext("Attempt to filter series episodes.");?></span>
                         </td>
+                    </tr>
+                    <tr>
+                        <td width="22%" valign="top" class="vncell"><?=gettext('Start Paused');?></td>
+                        <td width="78%" class="vtable">
+                            <input name="smart" type="checkbox" id="start_paused" value="yes" <?php if (isset($pconfig['start_paused'])) echo "checked";?>>
+                            <span class="vexpl"><?=gettext("Start torrent in paused state");?></span>
+                      </td>
                     </tr>
                     <tr>
                         <td width="22%" valign="top" class="vncell"><?=gettext("Feed");?></td>
