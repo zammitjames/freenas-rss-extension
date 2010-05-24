@@ -128,7 +128,7 @@ foreach ($a_feeds as &$feed) {
                         rss_log("New epidose $id", VERBOSE_EXTRA);
                     }
                     
-                    if (add_torrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory'], $feed['cookie']) == 0) {
+                    if (add_torrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory'], $feed['cookie'], isset($filter['start_paused'])) == 0) {
                         $item['downloaded'] = true;
                     }
                     else rss_log("Unable to add {$item['title']} from " . get_download($item), VERBOSE_ERROR);
