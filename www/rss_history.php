@@ -76,76 +76,69 @@ include("fbegin.inc");
             </select>
             <?php include("formend.inc");?>
         </form>
-        </td>
-    </tr>
 <?php if (isset($id)): ?>
-  <tr>
-    <td class="tabcont">
-            <?php if (is_array($list)): ?>
-            <form action="extension_rss_history.php" method="post">
-                <?php if (isset($savemsg)) print_info_box($savemsg); ?>
-                <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td width="75%" class="listhdrlr"><?=gettext("Title"); ?></td>
-                        <td width="20%" class="listhdrr"><?=gettext("Date"); ?></td>
-                        <td width="5%" class="listhdrr"><?=gettext("Downloaded"); ?></td>
-                        <!-- td width="10%" class="list"></td -->
-                    </tr>
-                    <?php $i = 0; foreach ($list as $entry): ?>
-                    <tr>
-                        <td class="listlr">
-                            <?php if (isset($entry['description']) && !empty($entry['description'])): ?>
-                            <img src="/ext/RSS/bullet_toggle_plus.png" alt="[more]" style='vertical-align: bottom; cursor: pointer' onclick="showdesc('desc<?=$i?>', this);" />
-                            <?php endif; ?>
-                            <?=htmlspecialchars($entry['title']);?>
-                            <?php if ($entry['filter'] && get_by_uuid($a_filters, $entry['filter']) != null): ?> <img src="/ext/RSS/lightning.png" alt="filtered" title="Matched filter: <?=get_by_uuid($a_filters, $entry['filter'], 'name'); ?>" /><?php endif; ?></td>
-                        <td class="listrc"><?=htmlspecialchars(date(DATE_RSS, strtotime($entry['pubDate'])));?></td>
-                        <td class="listrc">
-                            <?php if ($entry['downloaded']):?>
-                            <img src="status_enabled.png" border="0">
-                            <?php else:?>
-                            <form action="extension_rss_history.php" method="post">
-                            <input type="hidden" name="act" value="down" />
-                            <input type="hidden" name="id" value="<?=$id;?>" />
-                            <input type="hidden" name="did" value="<?=$entry['guid']; ?>" />
-                            <input type="image" src="status_disabled.png" onclick="submit();">
-                            <?php include("formend.inc");?>
-                            </form>
-                            <?php endif;?>
-                        </td>
-                        <!-- td valign="middle" nowrap class="list">
-                            <a href="extension_rss_filter_manage.php?act=del&id=<?=$i;?>" onclick="return confirm('<?=gettext("Do you really want to delete this entry?"); ?>')"><img src="x.gif" title="<?=gettext("Delete filter"); ?>" border="0"></a>
-                        </td -->
-                    </tr>
-                    <?php if (isset($entry['description']) && !empty($entry['description'])): ?>
-                    <tr>
-                        <?php // This could be dangerous as we displaying all the description including any HTML ?>
-                        <td class="listlr" id="desc<?=$i?>" style="display:none" colspan="3"><?=$entry['description']; ?></td>
-                    </tr>
-                    <?php endif; ?>
-                    <?php $i++; endforeach;?>
-                </table>
-                <?php include("formend.inc");?>
-            </form>
-            <?php
-            else:
-                print_error_box(gettext("There is no history, yet!"));
-            endif;
-            ?>
+        <br />
+    <?php if (is_array($list)): ?>
+            <?php if (isset($savemsg)) print_info_box($savemsg); ?>
+            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td width="75%" class="listhdrlr"><?=gettext("Title"); ?></td>
+                    <td width="20%" class="listhdrr"><?=gettext("Date"); ?></td>
+                    <td width="5%" class="listhdrr"><?=gettext("Status"); ?></td>
+                    <!-- td width="10%" class="list"></td -->
+                </tr>
+                <?php $i = 0; foreach ($list as $entry): ?>
+                <tr>
+                    <td class="listlr">
+                        <?php if (isset($entry['description']) && !empty($entry['description'])): ?>
+                            <img src="/ext/RSS/img/bullet_toggle_plus.png" alt="[more]" style='vertical-align: bottom; cursor: pointer' onclick="showdesc('desc<?=$i?>', this);" />
+                        <?php else: ?>
+                            <img src="/ext/RSS/img/blank.gif" style="width: 16px; height: 16px; vertical-align: bottom" />
+                        <?php endif; ?>
+                        <?=htmlspecialchars($entry['title']);?>
+                    </td>
+                    <td class="listrc"><?=htmlspecialchars(date(DATE_RSS, strtotime($entry['pubDate'])));?></td>
+                    <td class="listr" style="text-align:right">
+                        <?php if ($entry['filter'] && get_by_uuid($a_filters, $entry['filter']) != null): ?><img src="/ext/RSS/img/wand.png" alt="filtered" title="Matched filter: <?=get_by_uuid($a_filters, $entry['filter'], 'name'); ?>" /> <?php endif; ?>
+                        <form action="extension_rss_history.php" method="post" style="display: inline">
+                        <input type="hidden" name="act" value="down" />
+                        <input type="hidden" name="id" value="<?=$id;?>" />
+                        <input type="hidden" name="did" value="<?=$entry['guid']; ?>" />
+                        <input type="image" src="<?=($entry['downloaded']?'status_enabled':'/ext/RSS/img/add')?>.png" border="0">
+                        <?php include("formend.inc");?>
+                        </form>
+                    </td>
+                    <!-- td valign="middle" nowrap class="list">
+                        <a href="extension_rss_filter_manage.php?act=del&id=<?=$i;?>" onclick="return confirm('<?=gettext("Do you really want to delete this entry?"); ?>')"><img src="x.gif" title="<?=gettext("Delete filter"); ?>" border="0"></a>
+                    </td -->
+                </tr>
+                <?php if (isset($entry['description']) && !empty($entry['description'])): ?>
+                <tr>
+                    <?php // This could be dangerous as we displaying all the description including any HTML ?>
+                    <td class="listlr" id="desc<?=$i?>" style="display:none" colspan="3"><?=$entry['description']; ?></td>
+                </tr>
+                <?php endif; ?>
+                <?php $i++; endforeach;?>
+            </table>
+<?php
+    else:
+        print_error_box(gettext("There is no history, yet!"));
+    endif;
+endif;
+?>
         </td>
     </tr>
-<?php endif; ?>
 </table>
 <script type="text/javascript">
 function showdesc(id, elem) {
     var el = document.getElementById(id);
     if (el.style.display != 'none') {
-        elem.src = '/ext/RSS/bullet_toggle_plus.png';
+        elem.src = '/ext/RSS/img/bullet_toggle_plus.png';
         elem.alt = ' [more] ';
         el.style.display = 'none';
     }
     else {
-        elem.src = '/ext/RSS/bullet_toggle_minus.png';
+        elem.src = '/ext/RSS/img/bullet_toggle_minus.png';
         elem.alt = ' [less] ';
         el.style.display = '';
     }
