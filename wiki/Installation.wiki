@@ -9,7 +9,7 @@ Installation of FreeNAS RSS Extension for Transmission.  Installation is really 
 = Details =
 
 == Clean Install ==
-  # Download [http://freenas-rss-extension.googlecode.com/files/install.php install.php] and the latest [http://code.google.com/p/freenas-rss-extension/downloads/list?can=3&q=RSS*tgz RSS-somedate.tgz]
+  # Download [http://code.google.com/p/freenas-rss-extension/downloads/list?can=3&q=install*.php install.php] and the latest [http://code.google.com/p/freenas-rss-extension/downloads/list?can=3&q=RSS*tgz RSS-somedate.tgz]
   # Rename the RSS-somedate.tgz to RSS.tgz
   # Create a share ("Mount Point") following the FreeNAS instructions, make it available through the protocol of your choice (CIFS/SMB for Windows).
   # Open the above share, create a sub folder named "RSS" and copy both files in there.
