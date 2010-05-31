@@ -33,6 +33,7 @@ include("fbegin.inc");
                 <li class="tabact"><a href="extension_rss_feed_manage.php" title="<?=gettext("Reload page");?>"><span><?=gettext("Feeds");?></span></a></li>
                 <li class="tabinact"><a href="extension_rss_filter_manage.php"><span><?=gettext("Filters");?></span></a></li>
                 <li class="tabinact"><a href="extension_rss_history.php"><span><?=gettext("History");?></span></a></li>
+                <li class="tabinact"><a href="extension_rss_about.php"><span><?=gettext('About');?></span></a></li>
             </ul>
         </td>
     </tr>
