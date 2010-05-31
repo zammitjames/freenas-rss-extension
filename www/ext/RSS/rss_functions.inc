@@ -1,8 +1,8 @@
 <?php
 require_once('util.inc');
 require_once('config.inc');
-require_once('rss_class_history.php');
-require_once('Torrent.php');
+require_once('history.class.php');
+require_once('torrent.class.php');
 
 define('VERBOSE_OFF', 0);
 define('VERBOSE_ERROR', 1);
