@@ -121,7 +121,7 @@ if ($_POST) {
                     <tr>
                         <td width="22%" valign="top" class="vncell"><?=gettext('Start Paused');?></td>
                         <td width="78%" class="vtable">
-                            <input name="smart" type="checkbox" id="start_paused" value="yes" <?php if (isset($pconfig['start_paused'])) echo "checked";?>>
+                            <input name="start_paused" type="checkbox" id="start_paused" value="yes" <?php if (isset($pconfig['start_paused'])) echo "checked";?>>
                             <span class="vexpl"><?=gettext("Start torrent in paused state");?></span>
                       </td>
                     </tr>

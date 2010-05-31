@@ -2,11 +2,17 @@
 require_once('util.inc');
 require_once('config.inc');
 require_once('rss_class_history.php');
+require_once('Torrent.php');
 
 define('VERBOSE_OFF', 0);
 define('VERBOSE_ERROR', 1);
 define('VERBOSE_SUCCESS', 2);
 define('VERBOSE_EXTRA', 3);
+
+define('SUCCESS', 0);
+define('ERROR_NODATA', -1);
+define('ERROR_TRANSMISSION', -2);
+define('ERROR_NOWRITE', -3);
 
 $TRANSMISSION = array(
     'user' => (isset($config['bittorrent']['username']) ? $config['bittorrent']['username'] : 'admin'),
@@ -44,52 +50,53 @@ function rss_download($url, $cookie) {
   return $data;
 }
 
+function transmission_command($command) {
+    global $config, $TRANSMISSION;
+    $cmd = "transmission-remote {$TRANSMISSION['port']} --auth={$TRANSMISSION['user']}:{$TRANSMISSION['pass']} $command 2>&1";
+    mwexec2($cmd, $output, $retVal);
+        
+    return array($retVal, $output);
+}
+
 function add_torrent($torrent, $folder, $cookie='', $start_paused=false) {
     global $config, $TRANSMISSION;
     
     $file = '/tmp/' . md5($torrent) . '.torrent';
-    
     $torrent_data = rss_download($torrent, $cookie);
     
     if ($torrent_data === false) {
-        $retVal = -1;
+        rss_log("Unable to download $torrent", VERBOSE_ERROR);
+        return ERROR_NODATA;
     } else if (file_put_contents($file, $torrent_data) === false) {
-        $retVal = -3;
+        rss_log("Uable to write to $file", VERBOSE_ERROR);
+        return ERROR_NOWRITE;
     }
-    else { 
-        $start = "transmission-remote {$TRANSMISSION['port']} --auth={$TRANSMISSION['user']}:{$TRANSMISSION['pass']}";
-        $cmd = $start;
+    else {
+        transmission_command('--download-dir=' . escapeshellarg($folder));
+        $ret = transmission_command("-a $file");
+        if ($ret[0] == 0 && $start_paused)
+        {
+            $t = new Torrent($file);
+            $t = transmission_command("-t {$t->hash_info()} --stop");
+            if ($t[0] == 1) rss_log("Unable to pause $torrent");
+        }
         
-        if (!empty($folder) && is_dir($folder))
-            $cmd .= ' --download-dir=' . escapeshellarg($folder);
-            
-        if ($start_paused)
-            $cmd .= ' --stop';
-        
-        $cmd .= " -a $file 2>&1";
-        mwexec2($cmd, $output, $retVal);
-        
-        preg_match('/ responded: "([^"]+)"/i', $output[!empty($folder) && is_dir($folder) ? 1 : 0], $match);
-        if ($match[1] != "success") $retVal = "-2 {$match[1]}";
-
         // just to be safe, set everything back to the default download directory
-        $cmd = $start . ' --download-dir=' . escapeshellarg($TRANSMISSION['downloaddir']). ' 2>&1';
-        exec($cmd);
+        transmission_command('--download-dir=' . escapeshellarg($TRANSMISSION['downloaddir']));
+        
         unlink($file);
+        if($ret[0] == 1) {
+            if (strpos($ret[1], 'duplicate torrent') !== FALSE) {
+                rss_log("Download $torrent is already added", VERBOSE_SUCCESS);
+                return SUCCESS;
+            }
+            rss_log("Transmission error on $torrent: {$ret[1]}", VERBOSE_ERROR);
+            return ERROR_TRANSMISSION;
+        }
     }
     
-    if ($retVal == 0) rss_log("Downloaded $torrent", VERBOSE_SUCCESS);
-    else if ($retVal == -1) rss_log("Unable to download $torrent", VERBOSE_ERROR);
-    else if ($retVal == -2)
-        // Check for a duplicate torrent response and retcon it to not be an error ;)
-        // Thanks to dar.quonb
-        if ($retVal == "-2 duplicate torrent") {
-            $retVal = "0";
-            rss_log("Downloaded $torrent is already added", VERBOSE_SUCCESS);
-        }
-        else
-            rss_log("Transmission error on $torrent: $retVal", VERBOSE_ERROR);
-    return $retVal;        
+    rss_log("Downloaded $torrent", VERBOSE_SUCCESS);
+    return SUCCESS;
 }
 
 function get_by_uuid($array, $uuid, $field = null) {
