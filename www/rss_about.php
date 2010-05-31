@@ -50,9 +50,10 @@ include('fbegin.inc');
             </table>
             <br />
             <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                <tr><td class="listhdrlr">Torrent.php - Create and parse Torrent files</td></tr>
+                <tr><td class="listhdrlr">torrent-rw</td></tr>
                 <tr><td class="listlr"><a href="http://github.com/adriengibrat/torrent-rw">http://github.com/adriengibrat/torrent-rw</a></td></tr>
                 <tr><td class="listlr">
+                    <p>Torrent.php - Create and parse Torrent files</p>
                     <p>Copyright &copy; 2010, Adrien Gibrat</p>
 
                     <p>This program is free software: you can redistribute it and/or modify
