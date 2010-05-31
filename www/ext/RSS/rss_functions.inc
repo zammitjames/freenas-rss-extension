@@ -86,11 +86,11 @@ function add_torrent($torrent, $folder, $cookie='', $start_paused=false) {
         
         unlink($file);
         if($ret[0] == 1) {
-            if (strpos($ret[1], 'duplicate torrent') !== FALSE) {
+            if (strpos($ret[1][0], 'duplicate torrent') !== FALSE) {
                 rss_log("Download $torrent is already added", VERBOSE_SUCCESS);
                 return SUCCESS;
             }
-            rss_log("Transmission error on $torrent: {$ret[1]}", VERBOSE_ERROR);
+            rss_log("Transmission error on $torrent: {$ret[1][0]}", VERBOSE_ERROR);
             return ERROR_TRANSMISSION;
         }
     }
