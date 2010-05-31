@@ -3,7 +3,7 @@
 require_once("auth.inc");
 require_once('guiconfig.inc');
 require_once('ext/RSS/rss_functions.inc');
-require_once('ext/RSS/rss_class_history.php');
+require_once('ext/RSS/history.class.php');
 
 $pgtitle = array(gettext('Extensions'), gettext('RSS'), gettext('History'));
 if (!is_array($config['rss'])) $config['rss'] = array();
