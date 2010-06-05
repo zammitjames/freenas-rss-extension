@@ -53,6 +53,14 @@ if (isset($_POST['id'])) {
 
 include("fbegin.inc");
 ?>
+<script src="/ext/RSS/js/jquery.min.js"></script>
+<script src="/ext/RSS/js/jquery.boxy.js"></script>
+<link rel="stylesheet" href="/ext/RSS/css/boxy.css" type="text/css" />
+<script>
+$(function() {
+    $('.boxy-image').boxy({draggable: false, modal: true, closeable: false});
+});
+</script>
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
     <tr>
         <td class="tabnavtbl">
@@ -100,13 +108,25 @@ include("fbegin.inc");
                     <td class="listrc"><?=htmlspecialchars(date(DATE_RSS, strtotime($entry['pubDate'])));?></td>
                     <td class="listr" style="text-align:right">
                         <?php if ($entry['filter'] && get_by_uuid($a_filters, $entry['filter']) != null): ?><img src="/ext/RSS/img/wand.png" alt="filtered" title="Matched filter: <?=get_by_uuid($a_filters, $entry['filter'], 'name'); ?>" /> <?php endif; ?>
-                        <form action="extension_rss_history.php" method="post" style="display: inline">
-                        <input type="hidden" name="act" value="down" />
-                        <input type="hidden" name="id" value="<?=$id;?>" />
-                        <input type="hidden" name="did" value="<?=$entry['guid']; ?>" />
-                        <input type="image" src="<?=($entry['downloaded']?'status_enabled':'/ext/RSS/img/add')?>.png" border="0">
-                        <?php include("formend.inc");?>
-                        </form>
+                        <div id="download_<?=$i; ?>" style="display:none">
+                            <form action="extension_rss_history.php" class="boxy-form" method="post">
+                                <div style="font-weight: bold">Choose download directory:</div>
+                                <input type="hidden" name="act" value="down" />
+                                <input type="hidden" name="id" value="<?=$id;?>" />
+                                <input type="hidden" name="did" value="<?=$entry['guid']; ?>" />
+                                <input name="directory" type="text" class="formfld" id="directory" size="60" value="<?=get_by_uuid($a_filters, $entry['directory'], 'name'); ?>">
+                                <input name="directorybrowsebtn" type="button" class="formbtn" id="directorybrowsebtn" onclick="ifield = form.directory; filechooser = window.open(&quot;filechooser.php?p=&quot;+escape(ifield.value)+&quot;&amp;sd=/mnt&quot;, &quot;filechooser&quot;, &quot;scrollbars=yes,toolbar=no,menubar=no,statusbar=no,width=550,height=300&quot;); filechooser.ifield = ifield; window.ifield = ifield;" value="...">
+                                <div>Leave this blank to download to your default directory</div>
+                                <?php include("formend.inc");?>
+                                <br />
+                                <input type="submit" value="Download" onclick="$(this).parent().hide().next('div').show(); return true;" />
+                                <input type="submit" value="Close" onclick="return false;" class="close" />
+                            </form>
+                            <div style="display:none">
+                                <img src="/ext/RSS/img/load.gif" /> Sending command to transmission
+                            </div>
+                        </div>
+                        <a class="boxy-image" href="#download_<?=$i; ?>" title="Downloading <?=htmlspecialchars($entry['title']); ?>"><img src="<?=($entry['downloaded']?'status_enabled':'/ext/RSS/img/add')?>.png" border="0" /></a>
                     </td>
                     <!-- td valign="middle" nowrap class="list">
                         <a href="extension_rss_filter_manage.php?act=del&id=<?=$i;?>" onclick="return confirm('<?=gettext("Do you really want to delete this entry?"); ?>')"><img src="x.gif" title="<?=gettext("Delete filter"); ?>" border="0"></a>
