@@ -1,6 +1,6 @@
 #! /usr/local/bin/php -f
 <?php
-require_once('ext/RSS/rss_class_history.php');
+require_once('ext/RSS/history.class.php');
 require_once('ext/RSS/rss_functions.inc');
 require_once('XML/Unserializer.php');
 
