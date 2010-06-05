@@ -6,8 +6,6 @@ class History {
   var $_config = null;
   
   function History(&$settings) {
-    global $config;
-
     $this->_config = $settings;
   }
   
