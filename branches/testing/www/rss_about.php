@@ -6,7 +6,13 @@ require_once('guiconfig.inc');
 $pgtitle = array(gettext('Extensions'), gettext('RSS'), gettext('About'));
 include('fbegin.inc');
 ?>
-
+<script src="/ext/RSS/js/jquery.min.js"></script>
+<script>
+$(function(){
+    $(".license .listhdrlr").append("&nbsp;[<a href='#' class='lic-link' style='font-weight: normal'>license info</a>]");
+    $(".lic-link").click(function(event){ event.preventDefault(); $(this).parent().parent().parent().parent().find("td.listlr").toggle() });
+});
+</script>
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
     <tr>
         <td class="tabnavtbl">
@@ -49,11 +55,19 @@ include('fbegin.inc');
             </td></tr>
             </table>
             <br />
-            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="license">
+                <tr><td class="listhdrlr">Silk Icon Pack</td></tr>
+                <tr><td class="listlr" style="display:none"><a href="http://www.famfamfam.com/lab/icons/silk/">http://www.famfamfam.com/lab/icons/silk/</a></td></tr>
+                <tr><td class="listlr" style="display:none">
+                    <p>Copyright &copy; 2006, Mark James</p>
+                    <p>This work is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit <a href="http://creativecommons.org/licenses/by/3.0/">http://creativecommons.org/licenses/by/3.0/</a> or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.</p>
+                </td></tr>
+            </table>
+            <br />
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="license">
                 <tr><td class="listhdrlr">torrent-rw</td></tr>
-                <tr><td class="listlr"><a href="http://github.com/adriengibrat/torrent-rw">http://github.com/adriengibrat/torrent-rw</a></td></tr>
-                <tr><td class="listlr">
-                    <p>Torrent.php - Create and parse Torrent files</p>
+                <tr><td class="listlr" style="display:none"><a href="http://github.com/adriengibrat/torrent-rw">http://github.com/adriengibrat/torrent-rw</a></td></tr>
+                <tr><td class="listlr" style="display:none">
                     <p>Copyright &copy; 2010, Adrien Gibrat</p>
 
                     <p>This program is free software: you can redistribute it and/or modify
@@ -71,12 +85,56 @@ include('fbegin.inc');
                 </td></tr>
             </table>
             <br />
-            <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                <tr><td class="listhdrlr">Silk Icon Pack</td></tr>
-                <tr><td class="listlr"><a href="http://www.famfamfam.com/lab/icons/silk/">http://www.famfamfam.com/lab/icons/silk/</a></td></tr>
-                <tr><td class="listlr">
-                    <p>Copyright &copy; 2006, Mark James</p>
-                    <p>This work is licensed under the Creative Commons Attribution 3.0 Unported License. To view a copy of this license, visit <a href="http://creativecommons.org/licenses/by/3.0/">http://creativecommons.org/licenses/by/3.0/</a> or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.</p>
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="license">
+                <tr><td class="listhdrlr">JQuery</td></tr>
+                <tr><td class="listlr" style="display:none"><a href="http://jquery.com/">http://jquery.com/</a></td></tr>
+                <tr><td class="listlr" style="display:none">
+                    <p>Copyright &copy; 2010 John Resig, http://jquery.com/</p>
+
+                    <p>Permission is hereby granted, free of charge, to any person obtaining
+                    a copy of this software and associated documentation files (the
+                    "Software"), to deal in the Software without restriction, including
+                    without limitation the rights to use, copy, modify, merge, publish,
+                    distribute, sublicense, and/or sell copies of the Software, and to
+                    permit persons to whom the Software is furnished to do so, subject to
+                    the following conditions:</p>
+
+                    <p>The above copyright notice and this permission notice shall be
+                    included in all copies or substantial portions of the Software.</p>
+
+                    <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+                    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+                    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+                    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+                    LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+                    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+                    WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+                </td></tr>
+            </table>
+            <br />
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="license">
+                <tr><td class="listhdrlr">boxy</td></tr>
+                <tr><td class="listlr" style="display:none"><a href="http://onehackoranother.com/projects/jquery/boxy/">http://onehackoranother.com/projects/jquery/boxy/</a></td></tr>
+                <tr><td class="listlr" style="display:none">
+                    <p>Copyright &copy; 2008 Jason Frame (jason@onehackoranother.com)</p>
+                    <p>Permission is hereby granted, free of charge, to any person obtaining
+                    a copy of this software and associated documentation files (the
+                    "Software"), to deal in the Software without restriction, including
+                    without limitation the rights to use, copy, modify, merge, publish,
+                    distribute, sublicense, and/or sell copies of the Software, and to
+                    permit persons to whom the Software is furnished to do so, subject to
+                    the following conditions:</p>
+
+                    <p>The above copyright notice and this permission notice shall be
+                    included in all copies or substantial portions of the Software.</p>
+
+                    <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+                    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+                    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+                    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+                    LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+                    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+                    WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
                 </td></tr>
             </table>
         </td>
