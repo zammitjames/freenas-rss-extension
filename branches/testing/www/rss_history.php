@@ -57,7 +57,15 @@ include("fbegin.inc");
 <link rel="stylesheet" href="/ext/RSS/css/boxy.css" type="text/css" />
 <script>
 $(function() {
-    $('.boxy-image').boxy({draggable: false, modal: true, closeable: false, afterShow: function() { $('#message').hide(); } });
+    $('.boxy-image').boxy({
+        draggable: false,
+        modal: true,
+        closeable: false,
+        afterShow: function() {
+            $('#message').hide();
+            this.getContent().find("input[type='submit']").focus();
+        },
+     });
     
     var options = {
         target: '#message',
@@ -142,7 +150,7 @@ $(function() {
                                     <input name="start_paused" type="checkbox" id="start_paused" value="yes" /> Start torrent paused
                                 </div>
                                 <input type="submit" value="Download" />
-                                <input type="submit" value="Cancel" onclick="return false;" class="close" />
+                                <input type="button" value="Cancel" class="close" />
                                 <?php include("formend.inc"); ?>
                             </form>
                             <div style="display:none">
