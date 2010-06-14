@@ -10,7 +10,7 @@ include('fbegin.inc');
 <script>
 $(function(){
     $(".license .listhdrlr").append("&nbsp;[<a href='#' class='lic-link' style='font-weight: normal'>license info</a>]");
-    $(".lic-link").click(function(event){ event.preventDefault(); $(this).parent().parent().parent().parent().find("td.listlr").toggle() });
+    $(".lic-link").click(function(event){ event.preventDefault(); $(this).closest('table').find("td.listlr").toggle() });
 });
 </script>
 <table width="100%" border="0" cellpadding="0" cellspacing="0">
@@ -86,7 +86,7 @@ $(function(){
             </table>
             <br />
             <table width="100%" border="0" cellpadding="0" cellspacing="0" class="license">
-                <tr><td class="listhdrlr">JQuery</td></tr>
+                <tr><td class="listhdrlr">jQuery</td></tr>
                 <tr><td class="listlr" style="display:none"><a href="http://jquery.com/">http://jquery.com/</a></td></tr>
                 <tr><td class="listlr" style="display:none">
                     <p>Copyright &copy; 2010 John Resig, http://jquery.com/</p>
@@ -117,6 +117,33 @@ $(function(){
                 <tr><td class="listlr" style="display:none"><a href="http://onehackoranother.com/projects/jquery/boxy/">http://onehackoranother.com/projects/jquery/boxy/</a></td></tr>
                 <tr><td class="listlr" style="display:none">
                     <p>Copyright &copy; 2008 Jason Frame (jason@onehackoranother.com)</p>
+                    <p>Permission is hereby granted, free of charge, to any person obtaining
+                    a copy of this software and associated documentation files (the
+                    "Software"), to deal in the Software without restriction, including
+                    without limitation the rights to use, copy, modify, merge, publish,
+                    distribute, sublicense, and/or sell copies of the Software, and to
+                    permit persons to whom the Software is furnished to do so, subject to
+                    the following conditions:</p>
+
+                    <p>The above copyright notice and this permission notice shall be
+                    included in all copies or substantial portions of the Software.</p>
+
+                    <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+                    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+                    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+                    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+                    LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+                    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+                    WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+                </td></tr>
+            </table>
+            <br />
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="license">
+                <tr><td class="listhdrlr">jQuery Form Plugin</td></tr>
+                <tr><td class="listlr" style="display:none"><a href="http://jquery.malsup.com/form/">http://jquery.malsup.com/form/</a></td></tr>
+                <tr><td class="listlr" style="display:none">
+                    <p>Copyright &copy; 2010, Mike Alsup</p>
+
                     <p>Permission is hereby granted, free of charge, to any person obtaining
                     a copy of this software and associated documentation files (the
                     "Software"), to deal in the Software without restriction, including
