@@ -55,6 +55,7 @@ $(function(){
                 <table width="100%" border="0" cellpadding="0" cellspacing="0">
                     <tr><td width="15%"><a href="http://code.google.com/u/omnix32/">omnix32</a></td><td>Initial patch and testing for <a href="http://code.google.com/p/freenas-rss-extension/issues/detail?id=21">issue 21</a></td>
                     <tr><td><a href="http://code.google.com/u/dar.quonb/">dar.quonb</a></td><td>Patch and testing for issues <a href="http://code.google.com/p/freenas-rss-extension/issues/detail?id=22">22</a>, <a href="http://code.google.com/p/freenas-rss-extension/issues/detail?id=23">23</a> &amp; <a href="http://code.google.com/p/freenas-rss-extension/issues/detail?id=24">24</a></td>
+                    <tr><td><a href="http://code.google.com/u/durandal666/">durandal666</a></td><td>Initial patch and testing for <a href="http://code.google.com/p/freenas-rss-extension/issues/detail?id=28">issue 28</a></td>
                 </table>
             </td></tr>
             </table>
