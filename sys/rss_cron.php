@@ -3,6 +3,9 @@
 require_once('ext/RSS/history.class.php');
 require_once('ext/RSS/rss_functions.inc');
 require_once('XML/Unserializer.php');
+require_once('email.inc');
+
+$added_torrents = array();
 
 function get_download($item) {
     if (isset($item['enclosure']) && isset($item['enclosure']['attributes'])  && $item['enclosure']['attributes']['type'] == 'application/x-bittorrent')
@@ -31,8 +34,8 @@ function add_item($feed, $item) {
         'downloaded' => (isset($item['downloaded']) ? true : false),
         'filter' => (isset($item['filter']) ? $item['filter'] : false)
     ));
-		
-		$modified['history'] = true;
+
+    $modified['history'] = true;
 }
 
 // We don't have any feeds, just exit.  Filters are not required.
@@ -97,7 +100,10 @@ foreach ($a_feeds as &$feed) {
         if ($History->find($feed['uuid'], get_guid($item))) { rss_log("{$item['title']} found", VERBOSE_EXTRA); continue; }
 
         if (isset($feed['subscribe'])) {
-            if (add_torrent(get_download($item), $feed['directory'], $feed['cookie']) == 0) $item['downloaded'] = true;
+            if (add_torrent(get_download($item), $feed['directory'], $feed['cookie']) == 0) {
+                $item['downloaded'] = true;
+                $added_torrents[] = $item['title'];
+            }
         } else {
             foreach ($a_filters as &$filter) {
                 if (!isset($filter['enabled'])) continue;
@@ -124,12 +130,13 @@ foreach ($a_feeds as &$feed) {
                         else
                             $filter['episodes'] = array('rule' => array($id));
                             
-												$modified['filters'] = true;
+                        $modified['filters'] = true;
                         rss_log("New epidose $id", VERBOSE_EXTRA);
                     }
                     
                     if (add_torrent(get_download($item), !empty($filter['directory']) ? $filter['directory'] : $feed['directory'], $feed['cookie'], isset($filter['start_paused'])) == 0) {
                         $item['downloaded'] = true;
+                        $added_torrents[] = $item['title'];
                     }
                     else rss_log("Unable to add {$item['title']} from " . get_download($item), VERBOSE_ERROR);
                 }
@@ -138,6 +145,14 @@ foreach ($a_feeds as &$feed) {
         
         add_item(&$feed, $item);
     }   
+}
+
+$total_torrents = count($added_torrents);
+if ($total_torrents && isset($config['rss']['notifications'])) {
+    $subject = $total_torrents > 1 ? "Multiple Torrents added" : "Torrent added: {$added_torrents[0]}";
+    $body = sprintf("%s has added the following torrent%s to your queue:\r\n\r\n%s",
+        $config['system']['hostname'], $total_torrents > 1 ? 's' : '', implode("\r\n", $added_torrents));
+    email_send($config['statusreport']['to'], $subject, $body, $error);
 }
 
 rss_log('Saving data', VERBOSE_EXTRA);
