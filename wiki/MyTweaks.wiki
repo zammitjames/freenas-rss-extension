@@ -7,23 +7,32 @@ I love FreeNAS, but there are things that drive me nuts about it.  This is my do
 = Details =
 
 == CIFS/SMB + Transmission = File Permission Hell ==
+Under System|Advanced|rc.conf and the following value to make transmission, APF, SMB/CIFS all use the same "guest" user:
+||Variable||Value||Comment||
+||transmission_user||ftp||Set the transmission user to FTP||
 
-Transmission is great, but after I get the files downloaded, I tend to want to move them around.  Due to some kind of permission hell (ie, transmission sticking really restrictive permissions on files.) This tended to be a problem.  CIFS/SMB in Anonymous mode force the user and group to ftp.  Transmission can't use the ftp user due to it's use of /usr/sbin/nologin for a shell.  So to make the two play nice I added the following into the Auxiliary parameters for CIFS/SMB
-
-{{{
-force group = wheel
-force user = transmission
-}}}
-
-Since this will come after the force group/force user that FreeNAS sticks in there, CIFS/SMB will now use the same user/group that transmission does, problem solved!
+*Note* If you used my previous tweak to have CIFS/SMB use the transmission user, you'll need to {{{chown -R ftp .}}} your shared directories to make sure everything is playing nice.
 
 == settings.json blocklist_enabled ==
 
-By default (for whatever reason) FreeNAS disables the use of blocklists in transmission.  Simply editing the settings.json won't fix it, since it's the rc.d script telling transmission not to.  To solve this we need to add a new rc.conf variable in System|Advanced|rc.conf
-
+By default (for whatever reason) FreeNAS disables the use of blocklists in transmission.  Simply editing the settings.json won't fix it, since it's the rc.d script telling transmission not to.  To solve this we need to add a new rc.conf variable in System|Advanced|rc.conf:
 ||Variable||Value||Comment||
-||transmission_noblocklist||NO||Stop turning off my blocklist!||
-||tranmission_blocklist||YES||Now leave it on please...||
+||transmission_blocklist||YES||Use blocklists||
+
+=== Updating the Transmission Blocklist ===
+Add the following to System|Advanced|rc.conf
+||Variable||Value||Comment||
+||transmission_blocklist_url||http://www.bluetack.co.uk/config/nipfilter.dat.gz||Use the normal ipfilter instead of just Level 1||
+
+Add the following to System|Advanced|Cron
+||Command||Who||Description||
+||/etc/rc.d/transmission updateblocklist||root||Update transmission blocklist||
+
+Under Schedule Time:
+  * Change the Minutes radio button from "All" to "Selected".  Select "0".
+  * Change the Hours radio button from "All" to "Selected". Select "0".
+
+This will update your block list every day at midnight.  You can fine tune this to meet your needs.  I update once a week by selecting a specific day.
 
 == watcher.sh ==
 {{{
@@ -38,59 +47,4 @@ fi
 
 Transmission crashes on me a lot so I use this to clean up the core file and restart transmission.  I have it set to run every 5 minutes in a cron job.
 
-*Note* I am not running 0.70 at this time, this may no longer be necessary.
-
-== blocklist_update.sh ==
-{{{
-#! /bin/bash
-
-###
-# Select the blacklists you would like to download & use, all available lists
-# (except exemptions) are listed below
-#LISTS="ads-trackers-and-bad-pr0n bogon dshield edu fornonlancomputers hijacked iana-multicast iana-private iana-reserved level1 level2 Microsoft proxy spider spyware"
-#
-LISTS="bogon dshield hijacked iana-multicast iana-private iana-reserved level1 level2 Microsoft"
-
-###
-# YOU SHOULD NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING
-#
-url="http://www.bluetack.co.uk/config/"
-config_dir=`/usr/local/bin/xml sel -t -m "//bittorrent" -v configdir /cf/conf/config.xml | /usr/local/bin/xml unesc`
-updated=0
-
-if [ "$config_dir" == "" ]; then
- logger -t blocklist_update -- Config directory not set
- exit 1
-fi
-
-if [ ! -d "$config_dir/gzblocklists" ]; then
-  mkdir "$config_dir/gzblocklists"
-fi
-
-for list in $LISTS; do
-  file="$config_dir/gzblocklists/$list.gz"
-  lsize=`stat -qf %z "$file" || echo 0`
-  rsize=`fetch -apsw 5 $url$list.gz || exit 1`
-  if [ "$lsize" -ne "$rsize" ]; then
-    logger -t blocklist_update -- Updated $list
-
-    # need to download to different folder than $config_dir/blocklists
-    # transmission seems to have trouble at times starting possibly by trying to parse
-    # gz'd files
-    fetch -qapw 5 -o "$file" $url$list.gz
-    gunzip -kqf "$file"
-    mv "$config_dir/gzblocklists/$list" "$config_dir/blocklists/"
-    updated=1
-  fi
-done
-
-if [ "$updated" -eq "1" ]; then
-  /etc/rc.d/transmission restart &> /dev/null
-else
-  logger -t blocklist_updater -- All lists up-to-date
-fi
-}}}
-
-Updates all lists used by Bluetacks nipfilter.dat instead of just getting the level1 list that tranmissionbt mirrors.  Could easily be expanded to accept multiple lists from multiple locations, but this meets my needs for now.  I have it set to run once a week in a cron job.
-
-Updated to download files to a different directory as the gzip'd files were causing transmission to crash on startup.
+*Note* I am running 0.70 at this time, but haven't checked to see if transmission is still crashing
