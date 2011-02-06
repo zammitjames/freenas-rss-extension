@@ -44,11 +44,24 @@ if (isset($_POST['act']) && $_POST['act'] === "down") {
     }
 }
 
-if (isset($_POST['id'])) {
-    $id = $_POST['id'];
+function show_matched($elem) {
+	if ($elem['filter'] && get_by_uuid($a_filters, $elem['filter']) != null) return TRUE;
+	return FALSE;
+}
+
+if (isset($_REQUEST['id'])) {
+    $id = $_REQUEST['id'];
     $list = $History->full($a_feeds[$id]['uuid']);
-    if (is_array($list))
+    if (is_array($list)) {
         usort($list, 'usort_by_pubdate'); // Do this in rss_cron.php
+		if (isset($_REQUEST['filter_only'])) {
+			$list = array_filter($list, show_matched)
+		}
+		
+		$page = (isset($_REQUEST['page']) ? $_REQUEST['page'] - 1 : 0);
+		$per_page = (isset($_REQUEST['per_page']) ? $_REQUEST['per_page'] : 25);
+		$list = array_slice($list, ($per_page * $page), $per_page, true);
+	}
 }
 
 include("fbegin.inc");
